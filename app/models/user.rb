@@ -3,4 +3,16 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  # Use avatar in user edit and create forms
+  has_one_attached :avatar
+
+  has_many :competition_admins, dependent: :destroy
+  has_many :competitions, through: :competition_admins
+
+  has_many :team_members, dependent: :destroy
+  has_many :teams, through: :team_members
+
+  has_many :stats, dependent: :destroy
+  has_many :trophies, through: :team_members
 end
