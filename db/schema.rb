@@ -127,9 +127,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_010615) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.bigint "team_id", null: false
+    t.string "thumbnail"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["team_id"], name: "index_users_on_team_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -147,4 +150,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_010615) do
   add_foreign_key "teams", "competitions"
   add_foreign_key "trophies", "games"
   add_foreign_key "trophies", "team_members"
+  add_foreign_key "users", "teams"
 end
