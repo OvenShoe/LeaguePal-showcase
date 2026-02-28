@@ -1,4 +1,4 @@
-class AwardsController < ApplicationController
+class TrophiesController < ApplicationController
   def new
   end
 
