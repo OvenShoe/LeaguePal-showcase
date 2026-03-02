@@ -1,0 +1,7 @@
+<% if current_user&.is_admin? %>
+  <h1>Welcome Admin!</h1>
+<% else %>
+  <h1>Welcome to LeaguePal!</h1>
+<% end %>
+
+<%= link_to "All competitions", competitions_path %>
