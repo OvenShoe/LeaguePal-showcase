@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
-  
+
   resources :teams, only: %i[edit update]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-    # Routes grouped for admin competitions, rounds, teams
+  # Routes grouped for admin competitions, rounds, teams
   namespace :admin do
     resources :competitions do
       resources :rounds, shallow: true
@@ -22,6 +22,9 @@ Rails.application.routes.draw do
 
   get "users/:id/next_match", to: "users#next_match"
   get "teams/:id/stats", to: "teams#stats"
+  get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation
+  post "competitions/:id/send_invite", to: "competitions#send_invite", as: :send_competition_invite
+
 
   patch "teams/:id/upload_jersey", to: "teams#upload_jersey"
 

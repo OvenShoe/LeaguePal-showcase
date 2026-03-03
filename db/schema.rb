@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_03_044325) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_03_095051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,6 +89,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_044325) do
     t.index ["user_id"], name: "index_stats_on_user_id"
   end
 
+  create_table "team_invitations", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "invitee_email", null: false
+    t.bigint "inviter_id", null: false
+    t.bigint "team_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
+    t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
+    t.index ["team_id"], name: "index_team_invitations_on_team_id"
+    t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
+  end
+
   create_table "team_members", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "role"
@@ -147,6 +162,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_044325) do
   add_foreign_key "rounds", "competitions"
   add_foreign_key "stats", "games"
   add_foreign_key "stats", "users"
+  add_foreign_key "team_invitations", "teams"
+  add_foreign_key "team_invitations", "users", column: "inviter_id"
   add_foreign_key "team_members", "teams"
   add_foreign_key "team_members", "users"
   add_foreign_key "teams", "competitions"
