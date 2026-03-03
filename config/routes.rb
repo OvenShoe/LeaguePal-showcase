@@ -1,10 +1,8 @@
 Rails.application.routes.draw do
-  get "awards/new"
-  get "awards/create"
   resources :competitions, only: %i[index new create show edit update]
   resources :users, only: %i[index show edit update]
   resources :teams, only: %i[edit update]
-  resources :awards, only: %i[new create]
+  resources :trophies, only: %i[index new create]
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
