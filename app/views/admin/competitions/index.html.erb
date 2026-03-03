@@ -1,0 +1,12 @@
+<% @competitions.each do |competition| %>
+  <div class="competition">
+    <h3><%= competition.name %></h3>
+    <p>Sport: <%= competition.sport %></p>
+    <p>Start Date: <%= competition.start_date %></p>
+    <p>End Date: <%= competition.end_date %></p>
+    <%= link_to "Edit", edit_admin_competition_path(competition) %>
+  </div>
+<% end %>   
+
+<%= link_to "New Competition", new_admin_competition_path %>
+<%= link_to "Home", root_path %>
