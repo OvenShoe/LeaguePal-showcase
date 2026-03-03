@@ -1,4 +1,4 @@
-class CompetitionsController < ApplicationController
+class Admin::CompetitionsController < ApplicationController
   before_action :set_competition, only: %i[ show edit update ]
 
   def index
@@ -9,13 +9,14 @@ class CompetitionsController < ApplicationController
   end
 
   def new
-    @competition = Competition.new
+    @competition = Competition.new(sport: "unassigned")
   end
 
   def create
-    @competition = Competition.new(competition_params)
+    competition_admin = current_user.competition_admins.first_or_create!
+    @competition = competition_admin.competitions.new(competition_params)
     if @competition.save
-      redirect_to @competition
+      redirect_to admin_competition_path(@competition)
     else
       render :new, status: :unprocessable_entity
     end
@@ -26,7 +27,7 @@ class CompetitionsController < ApplicationController
 
   def update
     if @competition.update(competition_params)
-      redirect_to @competition
+      redirect_to admin_competition_path(@competition)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -39,6 +40,6 @@ class CompetitionsController < ApplicationController
   end
 
   def competition_params
-    params.require(:competition).permit(:name, :start_date, :end_date)
+    params.require(:competition).permit(:name, :sport, :start_date, :end_date)
   end
 end

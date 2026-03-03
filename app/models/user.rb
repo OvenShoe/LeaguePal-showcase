@@ -17,4 +17,8 @@ class User < ApplicationRecord
 
   has_many :stats, dependent: :destroy
   has_many :trophies, through: :team_members
+
+  def is_admin?
+    competition_admins.exists?
+  end
 end
