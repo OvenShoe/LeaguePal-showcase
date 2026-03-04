@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_03_095051) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_04_052110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -122,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_095051) do
     t.string "form", default: [], array: true
     t.integer "games_played"
     t.integer "losses"
+    t.string "name"
     t.integer "points_against"
     t.integer "points_for"
     t.datetime "updated_at", null: false

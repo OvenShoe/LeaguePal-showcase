@@ -5,13 +5,14 @@
 <p>End Date: <%= @competition.end_date %></p>
 
 <%= link_to "Back to Competitions", admin_competitions_path %>
-<%# create a form which  %>
-<%= simple_form_for([:admin, @competition], local: true) do |f| %>
-  <div class="form-inputs">
-            <%= f.input :name, label: "Team Name" %>
-            <%= f.input :invitee_email, "Email of invitee " %>
+<%# Submitted actions to CompetitionsController#send_invite  %>
+<%= simple_form_for :team_invite, url: send_competition_invite_path(@competition), local: true, method: :post do |f| %>
+<div class="form-inputs">
+    <%= f.input :name, label: "Team Name" %>
+    <%= f.input :invitee_email, label: "Email of invitee" %>
+    <%= f.hidden_field :user_id, value: current_user.id %>
+</div>
+  <div class="form-actions">
+    <%= f.button :submit, "Send Team Invite" %>
   </div>
-        <div class="form-actions">
-            <%= f.button :submit, "Edit Competition" %>
-        </div>
 <% end %>
