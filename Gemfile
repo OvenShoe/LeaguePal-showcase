@@ -76,3 +76,5 @@ group :development do
 end
 
 gem "devise", "~> 5.0"
+# Dummy email delivery method for development and test environments
+gem "letter_opener", group: :development
