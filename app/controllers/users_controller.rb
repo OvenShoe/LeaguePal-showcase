@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   def show
-    @users = User.find(params[:id])
+    @user = User.find(params[:id])
   end
 
   def edit
@@ -17,12 +17,12 @@ class UsersController < ApplicationController
   end
 
   def index
-    @user = User.all
+    @users = User.all
   end
 
   def next_match
     @user = User.find(params[:id])
-    @next.match = @user.next_match
+    @next_match = @user.next_match
   end
 
   private

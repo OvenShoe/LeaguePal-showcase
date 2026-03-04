@@ -1,7 +1,7 @@
 temp_comp_admin_user = User.create!(
-  first_name: "Temp",
-  last_name: "Admin",
-  email: "temp_admin@example.com",
+  first_name: "Admin",
+  last_name: "Test",
+  email: "at@example.com",
   password: "secret1!",
   password_confirmation: "secret1!",
   date_of_birth: Date.new(1900, 1, 1),
