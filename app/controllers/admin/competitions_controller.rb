@@ -27,7 +27,7 @@ class Admin::CompetitionsController < ApplicationController
 
   def update
     if @competition.update(competition_params)
-      redirect_to admin_competition_path(@comperftition)
+      redirect_to admin_competition_path(@competition)
     else
       render :edit, status: :unprocessable_entity
     end
