@@ -28,7 +28,7 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  config.active_storage.service = :cloudinary
+  config.active_storage.service = :local
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
@@ -37,7 +37,15 @@ Rails.application.configure do
 
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
-  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    user_name: ENV["MAILTRAP_USERNAME"],
+    password: ENV["MAILTRAP_PASSWORD"],
+    authentication: :plain,
+    enable_starttls_auto: false
+  }
   config.action_mailer.perform_deliveries = true
 
   # Print deprecation notices to the Rails logger.
