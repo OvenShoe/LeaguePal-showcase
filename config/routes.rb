@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: "users/registrations" }
 
-  resources :teams, only: %i[edit update]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Public-facing resources
   resources :users, only: %i[index show edit update], constraints: { id: /\d+/ }
   resources :competitions, only: %i[index new create show edit update]
-  resources :teams, only: %i[edit update]
+  resources :teams, only: %i[show edit index update] do
+     post :add_member, on: :member
+  end
   resources :trophies, only: %i[index new create]
 
   # Routes grouped for admin competitions, rounds, teams
@@ -23,9 +24,8 @@ Rails.application.routes.draw do
   get "teams/:id/stats", to: "teams#stats", constraints: { id: /\d+/ }
 
   # Jersey upload CHECK IF THIS USES ACTIVE RECORD
-   # ------------------------------------------------------------------------------------------   
   patch "teams/:id/upload_jersey", to: "teams#upload_jersey", constraints: { id: /\d+/ }
-  # ------------------------------------------------------------------------------------------   
+  # ------------------------------------------------------------------------------------------
   get "users/:id/next_match", to: "users#next_match"
   get "teams/:id/stats", to: "teams#stats"
   get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation

@@ -1,0 +1,18 @@
+<h2><%= @team.name %></h2>
+<p>
+  <%= image_tag @team.jersey if @team.jersey.attached? %>
+</p>
+<h3>Team Members</h3>
+<ul>
+  <% @team_members.each do |member| %>
+    <li><%= member.user.first_name %> <%= member.user.last_name %> - <%= member.role.capitalize %></li>
+  <% end %>
+</ul>
+<% if current_user && @team.team_members.exists?(user_id: current_user.id, role: "captain") %>
+  <%= link_to "Edit", edit_team_path(@team) %>
+  <%= link_to "Back", teams_path %>
+  <%= simple_form_for @team, url: add_member_team_path(@team), method: :post do |f| %>
+    <%= f.association :user, collection: @users, prompt: "Select a user" %>
+    <%= f.button :submit, "Invite to team", data: { confirm: "Are you sure you want to add this user to the team?" } %>
+  <% end %>
+<% end %>
