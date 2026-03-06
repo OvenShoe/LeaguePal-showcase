@@ -60,7 +60,7 @@ end
 
 gem "cloudinary"
 
-gem "openai", "~> 0.51.0"
+gem "openai", "~> 0.53.0"
 
 gem "simple_form", "~> 5.4"
 
