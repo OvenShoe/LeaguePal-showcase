@@ -34,7 +34,7 @@ class TeamInvitation < ApplicationRecord
   def accept!(user)
     transaction do
       update!(accepted_at: Time.current)
-      TeamMember.create!(team: team, user: user)
+      TeamMember.create!(team: team, user: user, role: :captain)
     end
   end
 

@@ -18,7 +18,7 @@ class Admin::CompetitionsController < ApplicationController
     if @competition.save
       redirect_to admin_competition_path(@competition)
     else
-      render :new, status: :unprocessable_entity
+      render :new
     end
   end
 
