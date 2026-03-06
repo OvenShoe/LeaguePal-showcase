@@ -6,5 +6,4 @@ class Competition < ApplicationRecord
   has_many :rounds, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :games, through: :rounds
-  validates :status, presence: true
 end
