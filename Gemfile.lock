@@ -242,7 +242,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.1-x86_64-linux-musl)
       racc (~> 1.4)
-    openai (0.51.0)
+    openai (0.53.0)
       base64
       cgi
       connection_pool
@@ -453,7 +453,7 @@ DEPENDENCIES
   jbuilder
   kamal
   letter_opener
-  openai (~> 0.51.0)
+  openai (~> 0.53.0)
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
