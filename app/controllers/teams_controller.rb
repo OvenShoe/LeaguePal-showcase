@@ -2,6 +2,11 @@ class TeamsController < ApplicationController
   before_action :authenticate_user!, except: [ :edit ]
   before_action :set_team, only: %i[ edit update show ]
 
+  def index
+    @competition = @team.competition
+    @comp_teams = @competition.teams
+  end
+
   def edit
     token = params[:token]
     if token.present?

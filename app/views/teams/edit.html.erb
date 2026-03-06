@@ -4,6 +4,10 @@
     <%= simple_form_for @team do |f| %>
         <%= f.error_notification %>
 
+        <% if params[:token].present? %>
+            <%= hidden_field_tag :token, params[:token] %>
+        <% end %>
+
         <div class="form-inputs">
             <%= f.input :name %>
             <%= f.input :jersey, as: :file, label: "Jersey" %>
