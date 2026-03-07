@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!, except: [ :edit ]
-  before_action :set_team, only: %i[ edit update show ]
+  before_action :set_team, only: %i[ edit update show add_member ]
 
   def index
     @competition = @team.competition
@@ -32,12 +32,15 @@ class TeamsController < ApplicationController
   end
 
   def add_member
-    @team = Team.find(params[:id])
-    user = User.find(team_params[:user_id])
+    @team_member = @team.team_members.build(team_member_params)
+    @team_member.role = :player
 
-    TeamMember.create!(team_id: @team.id, user_id: user.id, role: :player)
+    if @team_member.save
 
-    redirect_to @team, notice: "User added to team"
+      redirect_to @team, notice: "User added to team"
+    else
+      redirect_to @team, alert: "Error adding user to team"
+    end
   rescue ActiveRecord::RecordInvalid
     redirect_to @team, alert: "Error adding user to team"
   end
@@ -61,11 +64,16 @@ class TeamsController < ApplicationController
   def show
     @users = User.all - [ current_user ]
     @team_members = @team.team_members.includes(:user)
+    @team_member = @team.team_members.build
   end
 
   private
   def set_team
     @team = Team.find(params[:id])
+  end
+
+  def team_member_params
+    params.require(:team_member).permit(:user_id)
   end
 
   def team_params
