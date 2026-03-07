@@ -1,9 +1,16 @@
 <div class="container mx-auto px-4 py-4">
-  <%= render "/shared/nav" %>
 </div>
 <div class="container mx-auto px-4 py-4">
-  <h2 class="font-bold text-2xl">Next Game</h1>
+  <h2 class="font-bold text-2xl mb-6">Next Game</h1>
   <%= render "/shared/matchcard" %>
-  <h2 class="font-bold text-2xl">Competition Standings</h1>
+  <h2 class="font-bold text-2xl mt-6">Competition Standings</h1>
   <%= render "/shared/standingstable" %>
+  <h2 class="font-bold text-2xl mb-2">Competition Statistics</h1>
+    <ul class="grid grid-cols-6 text-left w-full mb-4">
+      <li class="hover:font-bold">Attack</li>
+      <li class="hover:font-bold">Defence</li>
+    </ul>
+
+  <%= render "/shared/statscard" %>
+
 </div>

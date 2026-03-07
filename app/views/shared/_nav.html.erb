@@ -1,7 +1,19 @@
 <nav class="font-barlowlight my-4 p-2">
   <ul class="grid grid-cols-3 text-center w-full">
-    <li class="hover:font-bold"><%= link_to "Competition", competitions_path %></li>
-      <li class="hover:font-bold"><%= link_to "Statistics", trophies_path %></li>
-    <li class="hover:font-bold"><%= link_to "Team", users_path %></li>
+    <% if current_page?(competitions_path) %>
+      <li class="font-bold underline"><%= link_to "Competition", competitions_path %></li>
+      <% else %>
+        <li class="hover:font-bold"><%= link_to "Competition", competitions_path %></li>
+    <% end %>
+    <% if current_page?(trophies_path) %>
+      <li class="font-bold underline"><%= link_to "Statistics", trophies_path %></li>
+      <% else %>
+        <li class="hover:font-bold"><%= link_to "Statistics", trophies_path %></li>
+      <% end %>
+      <% if current_page?(users_path) %>
+    <li class="font-bold underline"><%= link_to "Team", users_path %></li>
+    <% else %>
+        <li class="hover:font-bold"><%= link_to "Team", users_path %></li>
+      <% end %>
   </ul>
 </nav>
