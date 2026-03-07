@@ -1,13 +1,10 @@
-<h1>SportsBuddy</h1>
-<p>Welcome to your SportsBuddy homepage</p>
-
-<nav>
-  <ul>
-    <li><%= link_to "Competitions", competitions_path %></li>
+<nav class="font-barlowlight my-4 p-2">
+  <ul class="grid grid-cols-3 text-center w-full">
+    <li class="hover:font-bold"><%= link_to "Competitions", competitions_path %></li>
     <% unless current_user&.role == "Admin" %>
-      <li><%= link_to "Trophies", trophies_path %></li>
+      <li class="hover:font-bold"><%= link_to "Trophies", trophies_path %></li>
     <% end %>
-    <li><%= link_to "Users", users_path %></li>
+    <li class="hover:font-bold"><%= link_to "Users", users_path %></li>
   </ul>
 </nav>
 
@@ -33,4 +30,3 @@
 <% end %>
 
 <%= link_to "All competitions", competitions_path %>
-
