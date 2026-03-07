@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!, except: [ :edit ]
-  before_action :set_team, only: %i[ edit update show ]
+  before_action :set_team, only: %i[ edit update show add_member send_invite ]
 
   def index
     @competition = @team.competition
@@ -32,14 +32,33 @@ class TeamsController < ApplicationController
   end
 
   def add_member
-    @team = Team.find(params[:id])
-    user = User.find(team_params[:user_id])
+    @team_member = @team.team_members.build(team_member_params)
+    @team_member.role = :player
 
-    TeamMember.create!(team_id: @team.id, user_id: user.id, role: :player)
+    if @team_member.save
 
-    redirect_to @team, notice: "User added to team"
+      redirect_to @team, notice: "User added to team"
+    else
+      redirect_to @team, alert: "Error adding user to team"
+    end
   rescue ActiveRecord::RecordInvalid
     redirect_to @team, alert: "Error adding user to team"
+  end
+
+  def send_invite
+    invitation, raw_token = TeamInvitation.create_with_token!(
+      team: @team,
+      invitee_email: team_invitation_params[:invitee_email],
+      inviter: current_user,
+      role: :player
+    )
+
+    # Send invitation email
+    TeamInvitationMailer.invite_email(invitation, raw_token).deliver_later
+    redirect_to @team, notice: "Team invitation sent successfully!"
+  rescue StandardError => e
+    invitation&.destroy if defined?(invitation) && invitation&.persisted?
+    redirect_to @team, alert: "Failed to send invitation: #{e.message}"
   end
 
   def update
@@ -61,11 +80,20 @@ class TeamsController < ApplicationController
   def show
     @users = User.all - [ current_user ]
     @team_members = @team.team_members.includes(:user)
+    @team_member = @team.team_members.build
   end
 
   private
   def set_team
     @team = Team.find(params[:id])
+  end
+
+  def team_member_params
+    params.require(:team_member).permit(:user_id)
+  end
+
+  def team_invitation_params
+    params.require(:team_invitation).permit(:invitee_email)
   end
 
   def team_params
