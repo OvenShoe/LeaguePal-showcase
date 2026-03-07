@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!, except: [ :edit ]
-  before_action :set_team, only: %i[ edit update show add_member ]
+  before_action :set_team, only: %i[ edit update show add_member send_invite ]
 
   def index
     @competition = @team.competition
@@ -45,6 +45,22 @@ class TeamsController < ApplicationController
     redirect_to @team, alert: "Error adding user to team"
   end
 
+  def send_invite
+    invitation, raw_token = TeamInvitation.create_with_token!(
+      team: @team,
+      invitee_email: team_invitation_params[:invitee_email],
+      inviter: current_user,
+      role: :player
+    )
+
+    # Send invitation email
+    TeamInvitationMailer.invite_email(invitation, raw_token).deliver_later
+    redirect_to @team, notice: "Team invitation sent successfully!"
+  rescue StandardError => e
+    invitation&.destroy if defined?(invitation) && invitation&.persisted?
+    redirect_to @team, alert: "Failed to send invitation: #{e.message}"
+  end
+
   def update
     if @team.update(team_params)
       # Accept token if present in params or session
@@ -74,6 +90,10 @@ class TeamsController < ApplicationController
 
   def team_member_params
     params.require(:team_member).permit(:user_id)
+  end
+
+  def team_invitation_params
+    params.require(:team_invitation).permit(:invitee_email)
   end
 
   def team_params

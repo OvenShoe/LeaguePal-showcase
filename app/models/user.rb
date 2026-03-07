@@ -23,6 +23,10 @@ class User < ApplicationRecord
     competition_admins.exists?
   end
 
+  def is_captain_of?(team)
+    team_members.exists?(team: team, role: :captain)
+  end
+
   def list_name
     "#{first_name} #{last_name}: #{email}".strip
   end
