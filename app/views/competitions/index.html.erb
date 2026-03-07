@@ -1,9 +1,10 @@
 <div class="container mx-auto px-4 py-4">
-  <%= render "/shared/nav" %>
 </div>
 <div class="container mx-auto px-4 py-4">
+
   <h2 class="font-bold text-2xl">Next Game</h1>
   <%= render "/shared/matchcard" %>
   <h2 class="font-bold text-2xl">Competition Standings</h1>
   <%= render "/shared/standingstable" %>
+    <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
 </div>

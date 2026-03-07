@@ -1,7 +1,7 @@
 <nav class="font-barlowlight my-4 p-2">
   <ul class="grid grid-cols-3 text-center w-full">
     <li class="hover:font-bold"><%= link_to "Competitions", competitions_path %></li>
-    <% unless current_user&.role == "Admin" %>
+    <% unless current_user&.is_admin? %>
       <li class="hover:font-bold"><%= link_to "Trophies", trophies_path %></li>
     <% end %>
     <li class="hover:font-bold"><%= link_to "Users", users_path %></li>
@@ -30,3 +30,5 @@
 <% end %>
 
 <%= link_to "All competitions", competitions_path %>
+
+<%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
