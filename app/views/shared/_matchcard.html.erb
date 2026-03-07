@@ -1,7 +1,30 @@
-<div class="border border-gray-200 rounded-2xl p-6 my-8 drop-shadow-xl">
-  <ul class="grid grid-cols-3 text-center w-full">
-    <li>Team 1</li>
-    <li>vs.</li>
-    <li>Team 2</li>
-  </ul>
+<div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden">
+  <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
+    <!-- Time & Date -->
+    <div>
+      <p class="text-sm font-bold text-green-600">Time</p>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">Date</p>
+    </div>
+
+    <!-- Teams -->
+    <div class="flex items-center justify-center gap-8 w-full">
+      <!-- Home Team -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+      </div>
+
+      <!-- VS -->
+      <span class="text-sm text-neutral-500 dark:text-neutral-400">vs.</span>
+
+      <!-- Away Team -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+      </div>
+    </div>
+
+    <!-- Venue -->
+    <p class="text-sm text-neutral-500 dark:text-neutral-400">Location</p>
+  </div>
 </div>
