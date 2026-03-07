@@ -8,12 +8,14 @@ Rails.application.routes.draw do
   resources :competitions, only: %i[index new create show edit update]
   resources :teams, only: %i[show edit index update] do
      post :add_member, on: :member
+     post :send_invite, on: :member
   end
   resources :trophies, only: %i[index new create]
 
   # Routes grouped for admin competitions, rounds, teams
   namespace :admin do
     resources :competitions do
+      post :send_invite, on: :member
       resources :rounds, shallow: true
       resources :teams, shallow: true
     end
@@ -29,9 +31,6 @@ Rails.application.routes.draw do
   get "users/:id/next_match", to: "users#next_match"
   get "teams/:id/stats", to: "teams#stats"
   get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation
-  post "competitions/:id/send_invite", to: "competitions#send_invite", as: :send_competition_invite
-
-
   # Root
   root "pages#home"
 
