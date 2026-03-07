@@ -448,6 +448,8 @@ DEPENDENCIES
   debug
   devise (~> 5.0)
   dotenv-rails
+  faraday
+  faraday-multipart
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

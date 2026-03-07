@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema[8.1].define(version: 2026_03_03_110918) do
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_010615) do
->>>>>>> ed0ca7587ef956471e3980123e6ef21b15f7fd93
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_010615) do
   create_table "competitions", force: :cascade do |t|
     t.bigint "competition_admin_id", null: false
     t.datetime "created_at", null: false
+    t.integer "sport", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["competition_admin_id"], name: "index_competitions_on_competition_admin_id"
   end
