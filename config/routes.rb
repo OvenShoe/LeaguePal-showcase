@@ -21,6 +21,8 @@ Rails.application.routes.draw do
 
   # Jersey upload
   patch "teams/:id/upload_jersey", to: "teams#upload_jersey", constraints: { id: /\d+/ }
+  post "users/generate_ai_avatar", to: "users#generate_ai_avatar", as: :generate_ai_avatar_users
+  post "users/set_avatar/:id", to: "users#set_avatar", as: :set_avatar
 
   # Root
   root "pages#home"
