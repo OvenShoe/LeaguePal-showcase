@@ -5,7 +5,7 @@ require "base64"
 require "stringio"
 
 class AiAvatarGenerator
-  MAX_AVATARS = 5  # limit to last 5 avatars
+  MAX_AVATARS = 8  # limit to last 8 avatars
 
   def initialize(user)
     @user = user
@@ -53,5 +53,11 @@ class AiAvatarGenerator
     @user.save!
 
     @user.ai_avatars.last
+  end
+
+  def destroy
+    avatar = current_user.ai_avatars.find(params[:id])
+    avatar.purge
+    redirect_to edit_user_registration_path, notice: "Avatar deleted."
   end
 end

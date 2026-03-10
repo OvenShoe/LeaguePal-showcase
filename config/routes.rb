@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   patch "teams/:id/upload_jersey", to: "teams#upload_jersey", constraints: { id: /\d+/ }
   post "users/generate_ai_avatar", to: "users#generate_ai_avatar", as: :generate_ai_avatar_users
   post "users/set_avatar/:id", to: "users#set_avatar", as: :set_avatar
+  delete 'avatars/:id', to: 'avatars#destroy', as: 'delete_ai_avatar'
 
   # Root
   root "pages#home"
