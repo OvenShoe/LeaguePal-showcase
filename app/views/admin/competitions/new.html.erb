@@ -1,0 +1,20 @@
+<div class="container">
+    <h1>New Competition</h1>
+
+    <%= simple_form_for([:admin, @competition], local: true) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="form-inputs">
+            <%= f.input :name, label: "Competition Name" %>
+            <%= f.input :sport, collection: Competition.sports.keys.map { |key| [key, key] }, include_blank: false, label: "Sport" %>
+            <%= f.input :start_date, as: :datetime %>
+            <%= f.input :end_date, as: :datetime %>
+        </div>
+
+        <div class="form-actions">
+            <%= f.button :submit, "Create Competition" %>
+        </div>
+    <% end %>
+
+    <%= link_to "Back", admin_competitions_path %>
+</div>

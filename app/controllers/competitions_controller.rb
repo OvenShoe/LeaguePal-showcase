@@ -1,10 +1,14 @@
 class CompetitionsController < ApplicationController
+  require "bcrypt"
+  require "securerandom"
+
+  before_action :set_competition, only: %i[ show edit update ]
+
   def index
     @competitions = Competition.all
   end
 
   def show
-    @competition = Competition.find(params[:id])
   end
 
   def new
@@ -16,16 +20,14 @@ class CompetitionsController < ApplicationController
     if @competition.save
       redirect_to @competition
     else
-      render :new, status: :unprocessable_entity
+      render :new
     end
   end
 
   def edit
-    @competition = Competition.find(params[:id])
   end
 
   def update
-    @competition = Competition.find(params[:id])
     if @competition.update(competition_params)
       redirect_to @competition
     else
@@ -34,6 +36,10 @@ class CompetitionsController < ApplicationController
   end
 
   private
+
+  def set_competition
+    @competition = Competition.find(params[:id])
+  end
 
   def competition_params
     params.require(:competition).permit(:name, :start_date, :end_date)

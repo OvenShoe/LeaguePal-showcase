@@ -1,0 +1,32 @@
+<h2><%= @team.name %></h2>
+<p>
+  <div class="w-20 h-20 object-cover" >
+    <%= image_tag @team.jersey if @team.jersey.attached? %>
+  </div>
+</p>
+<h3>Team Members:</h3>
+<ul>
+  <% @team_members.each do |member| %>
+    <li><%= member.user.first_name %> <%= member.user.last_name %> - <%= member.role.capitalize %></li>
+  <% end %>
+</ul>
+<% if current_user&.is_captain_of?(@team) %>
+  <%= link_to "Edit", edit_team_path(@team) %>
+  <%= link_to "Back", teams_path %>
+
+  <h3 class="mt-6">Add Existing User</h3>
+  <%= simple_form_for @team_member, url: add_member_team_path(@team), method: :post do |f| %>
+    <% if @users.any? %>
+      <%= f.association :user, collection: @users, label_method: :list_name, prompt: "Select a user" %>
+    <% else %>
+      <p>No users available to invite.</p>
+    <% end %>
+      <%= f.button :submit, "Add to team", data: { confirm: "Are you sure you want to add this user to the team?" } %>
+  <% end %>
+
+  <h3 class="mt-6">Invite New User by Email</h3>
+  <%= simple_form_for :team_invitation, url: send_invite_team_path(@team), method: :post do |f| %>
+    <%= f.input :invitee_email, label: "Email", required: true, input_html: { type: 'email' } %>
+    <%= f.button :submit, "Send Invitation" %>
+  <% end %>
+<% end %>
