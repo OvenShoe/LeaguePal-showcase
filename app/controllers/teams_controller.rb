@@ -1,6 +1,7 @@
 class TeamsController < ApplicationController
-  before_action :authenticate_user!, except: [ :edit ]
+  before_action :authenticate_user!, except: %i[ edit show ]
   before_action :set_team, only: %i[ edit update show add_member send_invite ]
+  before_action :authenticate_or_allow_with_token!, only: [ :show ]
 
   def index
     @competition = @team.competition
@@ -24,6 +25,7 @@ class TeamsController < ApplicationController
         # User is logged in and invitation is valid
         @team = invitation.team
         @invitation = invitation
+        @invitation_token = token
         flash.now[:notice] = "Welcome! Please complete your profile before joining the team."
       end
     else
@@ -78,14 +80,37 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @users = User.all - [ current_user ]
+    @users = User.all - (current_user ? [ current_user ] : [])
     @team_members = @team.team_members.includes(:user)
-    @team_member = @team.team_members.build
+    @team_member = @team.team_members.build if current_user
+
+    if token_params.present?
+      @invitation = TeamInvitation.find_valid_by_token(token_params)
+      @invitation_token = token_params if @invitation
+    end
   end
 
   private
+
   def set_team
     @team = Team.find(params[:id])
+  end
+
+  def authenticate_or_allow_with_token!
+    # If user is not logged in but has a token, redirect to signup
+    if current_user.nil?
+      if token_params.present?
+        invitation = TeamInvitation.find_valid_by_token(token_params)
+        if invitation.nil?
+          redirect_to root_path, alert: "Invalid or expired invitation token." and return
+        end
+        # Redirect to signup with token in session
+        session[:team_invitation_token] = token_params
+        redirect_to new_user_registration_path, notice: "Please create an account to accept this invitation."
+      else
+        authenticate_user!
+      end
+    end
   end
 
   def team_member_params
@@ -93,7 +118,11 @@ class TeamsController < ApplicationController
   end
 
   def team_invitation_params
-    params.require(:team_invitation).permit(:invitee_email)
+    params.require(:team_invitation).permit(:invitee_email, :token)
+  end
+
+  def token_params
+    params[:token]
   end
 
   def team_params
