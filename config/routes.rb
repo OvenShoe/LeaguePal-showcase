@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     end
   end
 
+
   # Public routes for stats and next match
   get "users/:id/next_match", to: "users#next_match", constraints: { id: /\d+/ }
   get "teams/:id/stats", to: "teams#stats", constraints: { id: /\d+/ }
@@ -35,6 +36,9 @@ Rails.application.routes.draw do
   get "users/:id/next_match", to: "users#next_match"
   get "teams/:id/stats", to: "teams#stats"
   get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation
+  post "/team_invitations/accept", to: "team_invitations#accept", as: "team_invitation_accept"
+  post "/team_invitations/reject", to: "team_invitations#reject", as: "team_invitation_reject"
+
   # Root
   root "pages#home"
 
