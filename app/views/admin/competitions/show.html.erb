@@ -14,27 +14,41 @@
 <% if @teams.count > 1 %>
   <p>Number of teams: <%= @teams.count %></p>
 <%end%>
-
-
-<%= link_to "Back to Competitions", admin_competitions_path %>
-<%# Submitted actions to Admin::CompetitionsController#send_invite %>
-<%= simple_form_for :team_invite, url: send_invite_admin_competition_path(@competition), local: true, method: :post do |f| %>
-<div class="form-inputs">
-    <%= f.input :name, label: "Team Name" %>
-    <%= f.input :invitee_email, label: "Email of invitee" %>
-    <%= f.input :role, as: :radio_buttons, collection: [["Captain", "captain"], ["Player", "player"]], label: "Role", checked: "captain", required: true %>
-</div>
-  <div class="form-actions">
-    <%= f.button :submit, "Send Team Invite" %>
+<% if @competition.scaffold_generated? %>
+  <p>League scaffold has been generated for this competition.</p>
+<% else %>
+  <%= link_to "Back to Competitions", admin_competitions_path %>
+  <%# Submitted actions to Admin::CompetitionsController#send_invite %>
+  <%= simple_form_for :team_invite, url: send_invite_admin_competition_path(@competition), local: true, method: :post do |f| %>
+  <div class="form-inputs">
+      <%= f.input :name, label: "Team Name" %>
+      <%= f.input :invitee_email, label: "Email of invitee" %>
+      <%= f.input :role, as: :radio_buttons, collection: [["Captain", "captain"], ["Player", "player"]], label: "Role", checked: "captain", required: true %>
   </div>
+    <div class="form-actions">
+      <%= f.button :submit, "Send Team Invite" %>
+    </div>
+  <% end %>
+
+  <%= simple_form_for :team, url: create_team_admin_competition_path(@competition), local: true, method: :post do |f| %>
+    <div class="form-inputs">
+      <%= f.input :name, label: "Team Name" %>
+      <%= f.input :captain_id,
+        label: "Captain",
+        collection: @available_captains.map { |user| [user.list_name, user.id] },
+        prompt: "Select a captain" %>
+    </div>
+    <div class="form-actions">
+      <%= f.button :submit, "Create Team" %>
+    </div>
+  <% end %>
 <% end %>
 
-
-<% if @teams.count >= 2 %>
+<% if @teams.count >= 2 && !@competition.scaffold_generated? %>
   <%= simple_form_for @competition, url: generate_league_admin_competition_path(@competition), local: true, method: :post do |f| %>
     <div class="form-inputs">
-      <%= label_tag :round_count, "Number of Rounds" %>
-      <%= number_field_tag :round_count, nil, min: 1 %>
+      <%= label_tag :ties, "Times each team plays every other team" %>
+      <%= number_field_tag :ties, 1, min: 1 %>
     </div>
     <div class="form-actions">
       <%= f.button :submit, "Generate league scaffold" %>
