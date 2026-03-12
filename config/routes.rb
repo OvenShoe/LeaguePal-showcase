@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :games
+  resources :rounds
   devise_for :users, controllers: { registrations: "users/registrations" }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -16,6 +18,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :competitions do
       post :send_invite, on: :member
+      post :generate_league, on: :member
       resources :rounds, shallow: true
       resources :teams, shallow: true
     end
