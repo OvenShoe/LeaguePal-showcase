@@ -1,10 +1,84 @@
 <h2>Edit <%= resource_name.to_s.humanize %></h2>
 
-<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+<h3>Your AI Avatar Gallery</h3>
+
+<div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+  <% resource.ai_avatars.last(8).reverse_each do |avatar| %>
+
+    <% selected = resource.avatar.attached? && resource.avatar.blob_id == avatar.blob_id %>
+
+    <div style="text-align:center; position:relative;">
+
+      <%= button_to set_avatar_path(avatar.id),
+          method: :post,
+          style: "border:none; background:none; padding:0;" do %>
+        <%= image_tag avatar,
+            width: 120,
+            height: 120,
+            style: "
+              border-radius:50%;
+              object-fit:cover;
+              cursor:pointer;
+              border:5px solid #{selected ? '#4CAF50' : '#ddd'};
+            " %>
+      <% end %>
+
+      <% if selected %>
+        <small>Current Avatar</small>
+      <% else %>
+        <small>Click to use</small>
+      <% end %>
+
+      <%= button_to delete_ai_avatar_path(avatar.id),
+          method: :delete,
+          data: { confirm: "Delete this avatar?", turbo_confirm: "Delete this avatar?" },
+          style: "
+            display:block;
+            margin-top:4px;
+            background:#e53e3e;
+            color:white;
+            border:none;
+            border-radius:4px;
+            padding:3px 10px;
+            cursor:pointer;
+            font-size:12px;
+          " do %>
+        🗑 Delete
+      <% end %>
+
+    </div>
+
+  <% end %>
+</div>
+
+<h3>Generate AI Avatar</h3>
+
+<% if resource.avatar.attached? %>
+  <%= button_to "Generate AI Avatar",
+      generate_ai_avatar_users_path,
+      method: :post %>
+<% else %>
+  <p>Upload an avatar first to generate an AI version.</p>
+<% end %>
+
+<hr>
+
+<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f| %>
   <%= f.error_notification %>
 
   <div class="form-inputs">
+
     <%= f.input :email, required: true, autofocus: true %>
+
+    <%= f.input :avatar, as: :file, label: "Upload Avatar" %>
+
+    <% if resource.avatar.attached? %>
+      <p>Current avatar:</p>
+      <%= image_tag resource.avatar,
+          width: 120,
+          height: 120,
+          style: "border-radius:50%; object-fit:cover;" %>
+    <% end %>
 
     <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
       <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
@@ -14,22 +88,36 @@
                 hint: "leave it blank if you don't want to change it",
                 required: false,
                 input_html: { autocomplete: "new-password" } %>
+
     <%= f.input :password_confirmation,
                 required: false,
                 input_html: { autocomplete: "new-password" } %>
+
     <%= f.input :current_password,
                 hint: "we need your current password to confirm your changes",
                 required: true,
                 input_html: { autocomplete: "current-password" } %>
+
   </div>
 
   <div class="form-actions">
     <%= f.button :submit, "Update" %>
   </div>
+
 <% end %>
+
+<hr>
 
 <h3>Cancel my account</h3>
 
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
+<div>
+  Unhappy?
+  <%= button_to "Cancel my account",
+      registration_path(resource_name),
+      method: :delete,
+      data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" } %>
+</div>
+
+<br>
 
 <%= link_to "Back", :back %>

@@ -68,6 +68,9 @@ gem "tailwindcss-rails", "~> 4.4"
 
 gem "dotenv-rails", groups: [ :development, :test ]
 
+gem "faraday"
+gem "faraday-multipart"
+
 # ----------------------------------------------------
 
 group :development do
