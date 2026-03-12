@@ -1,4 +1,4 @@
-class Admin::RoundsController < Admin::BaseController
+class RoundsController < ApplicationController
   before_action :set_round, only: %i[ show edit update destroy ]
   before_action :authenticate_user!
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
     t.datetime "created_at", null: false
     t.datetime "end_date"
     t.string "name"
+    t.boolean "scaffold_generated", default: false, null: false
     t.integer "sport", default: 0, null: false
     t.datetime "start_date"
     t.datetime "updated_at", null: false
@@ -61,8 +62,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
   end
 
   create_table "games", force: :cascade do |t|
+    t.integer "bye", null: false
     t.datetime "created_at", null: false
+    t.string "location"
     t.bigint "round_id", null: false
+    t.datetime "start_time"
     t.bigint "team_1_id"
     t.bigint "team_2_id"
     t.datetime "updated_at", null: false
@@ -98,13 +102,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "team_id", null: false
-    t.string "token"
+    t.string "token", default: "", null: false
     t.string "token_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
     t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
     t.index ["role"], name: "index_team_invitations_on_role"
     t.index ["team_id"], name: "index_team_invitations_on_team_id"
+    t.index ["token"], name: "index_team_invitations_on_token", unique: true
     t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
   end
 
