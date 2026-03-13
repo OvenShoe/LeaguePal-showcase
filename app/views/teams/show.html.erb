@@ -1,18 +1,54 @@
 <h2><%= @team.name %></h2>
 <p>
-  <%= image_tag @team.jersey if @team.jersey.attached? %>
+  <div class="w-20 h-20 object-cover" >
+    <%= image_tag @team.jersey if @team.jersey.attached? %>
+  </div>
 </p>
-<h3>Team Members</h3>
+<h3>Team Members:</h3>
 <ul>
   <% @team_members.each do |member| %>
     <li><%= member.user.first_name %> <%= member.user.last_name %> - <%= member.role.capitalize %></li>
   <% end %>
 </ul>
-<% if current_user && @team.team_members.exists?(user_id: current_user.id, role: "captain") %>
+<% if current_user&.is_captain_of?(@team) %>
   <%= link_to "Edit", edit_team_path(@team) %>
   <%= link_to "Back", teams_path %>
-  <%= simple_form_for @team, url: add_member_team_path(@team), method: :post do |f| %>
-    <%= f.association :user, collection: @users, prompt: "Select a user" %>
-    <%= f.button :submit, "Invite to team", data: { confirm: "Are you sure you want to add this user to the team?" } %>
+
+  <h3 class="mt-6">Add Existing User</h3>
+  <%= simple_form_for @team_member, url: add_member_team_path(@team), method: :post do |f| %>
+    <% if @users.any? %>
+      <%= f.association :user, collection: @users, label_method: :list_name, prompt: "Select a user" %>
+    <% else %>
+      <p>No users available to invite.</p>
+    <% end %>
+      <%= f.button :submit, "Add to team", data: { confirm: "Are you sure you want to add this user to the team?" } %>
   <% end %>
+
+  <h3 class="mt-6">Invite New User by Email</h3>
+  <%= simple_form_for :team_invitation, url: send_invite_team_path(@team), method: :post do |f| %>
+    <%= f.input :invitee_email, label: "Email", required: true, input_html: { type: 'email' } %>
+    <%= f.button :submit, "Send Invitation" %>
+  <% end %>
+<% end %>
+
+<% if @invitation_token.present? && @invitation.present? %>
+  <div data-controller="team-popup"
+       data-team-popup-token-value="<%= @invitation_token %>"
+       data-team-popup-accept-url-value="<%= team_invitation_accept_path(@invitation) %>"
+       data-team-popup-reject-url-value="<%= team_invitation_reject_path(@invitation) %>"
+       data-team-popup-team-name-value="<%= @team.name %>"
+       style="position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div style="background-color: white; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); padding: 1.5rem; max-width: 28rem; margin: 1rem;">
+      <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">Accept invitation?</h2>
+      <p style="color: #374151; margin-bottom: 1.5rem;">You've been invited to join <strong><%= @team.name %></strong></p>
+      <div style="display: flex; gap: 1rem;">
+        <button data-action="click->team-popup#acceptInvitation" style="flex: 1; background-color: #22c55e; color: white; font-weight: bold; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer;">
+          Accept
+        </button>
+        <button data-action="click->team-popup#rejectInvitation" style="flex: 1; background-color: #ef4444; color: white; font-weight: bold; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer;">
+          Decline
+        </button>
+      </div>
+    </div>
+  </div>
 <% end %>

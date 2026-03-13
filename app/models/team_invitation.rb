@@ -3,19 +3,27 @@
 class TeamInvitation < ApplicationRecord
   require "securerandom"
 
+  enum :status, { pending: 0, accepted: 1, rejected: 2, failed: 3 }, default: :pending
+
   belongs_to :team
   belongs_to :inviter, class_name: "User"
 
+  enum :role, { player: 0, captain: 1 }
+
   validates :invitee_email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :token_digest, presence: true
+  validates :token, presence: true, uniqueness: true, on: :create
+  validates :role, presence: true
+  validates :inviter, presence: true
 
   before_validation :ensure_token_digest, on: :create
   before_create :set_default_expires_at
 
   # Create an invitation and return the record plus the raw token
   # Example:
-  #   invitation, raw_token = TeamInvitation.create_with_token!(inviter: user, team: team, invitee_email: 'a@b.com')
-  def self.create_with_token!(inviter:, team:, invitee_email:, expires_at: 7.days.from_now)
+  #   invitation, raw_token = TeamInvitation.create_with_token!(inviter: user, team: team, invitee_email: 'a@b.com', role: :player)
+  def self.create_with_token!(inviter:, team:, invitee_email:, role: :player, expires_at: 7.days.from_now)
+    role = role.presence || :player
     raw_token = SecureRandom.urlsafe_base64(24)
     token_digest = BCrypt::Password.create(raw_token)
 
@@ -23,7 +31,9 @@ class TeamInvitation < ApplicationRecord
       inviter: inviter,
       team: team,
       invitee_email: invitee_email.to_s.downcase,
+      token: raw_token,
       token_digest: token_digest,
+      role: role,
       expires_at: expires_at
     )
 
@@ -33,8 +43,8 @@ class TeamInvitation < ApplicationRecord
   # Accept the invitation and create the team membership for the provided user
   def accept!(user)
     transaction do
-      update!(accepted_at: Time.current)
-      TeamMember.create!(team: team, user: user, role: :captain)
+      update!(accepted_at: Time.current, status: :accepted)
+      TeamMember.create!(team: team, user: user, role: self.role)
     end
   end
 

@@ -1,9 +1,10 @@
+
 <header class="text-black p-2 mx-auto my-4 font-barlow text-center text-2xl font-medium">
  <div class="mx-auto w-8">
-  <%= image_tag "logo.png", style: "animation: bounce-once 0.6s ease-in-out 0.3s 3" %>
+  <%= link_to image_tag("logo.png"), root_path %>
   </div>
   <nav>
-    <a href="#">League Pal</a>
+    <%= link_to "League Pal", root_path %>
   </nav>
 </header>
 <hr>

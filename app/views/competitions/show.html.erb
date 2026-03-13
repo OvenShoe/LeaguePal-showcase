@@ -1,4 +1,31 @@
-<div>
-  <h1 class="font-bold text-4xl">Competitions#show</h1>
-  <p>Find me in app/views/competitions/show.html.erb</p>
+<div class="container mx-auto px-4 py-8">
+  <h1 class="font-bold text-4xl mb-4"><%= @competition.name %></h1>
+
+  <div class="mb-6">
+    <p><strong>Sport:</strong> <%= @competition.sport %></p>
+    <p><strong>Start Date:</strong> <%= @competition.start_date %></p>
+    <p><strong>End Date:</strong> <%= @competition.end_date %></p>
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Teams</h2>
+    <% if @competition.teams.any? %>
+      <ul class="list-disc pl-6">
+        <% @competition.teams.each do |team| %>
+          <li><%= team.name %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-600">No teams registered yet.</p>
+    <% end %>
+  </div>
+
+  <% if current_user&.is_admin? %>
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Admin Actions</h2>
+      <%= link_to "Manage Competition Invites", admin_competition_path(@competition), class: "text-blue-600 hover:underline" %>
+    </div>
+  <% end %>
+
+  <%= link_to "Back to Competitions", competitions_path, class: 'text-blue-600 hover:underline' %>
 </div>

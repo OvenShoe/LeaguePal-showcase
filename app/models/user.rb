@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
   # Use avatar in user edit and create forms
   has_one_attached :avatar
+  has_many_attached :ai_avatars
 
   has_many :competition_admins, dependent: :destroy
   has_many :competitions, through: :competition_admins
@@ -21,5 +22,13 @@ class User < ApplicationRecord
 
   def is_admin?
     competition_admins.exists?
+  end
+
+  def is_captain_of?(team)
+    team_members.exists?(team: team, role: :captain)
+  end
+
+  def list_name
+    "#{first_name} #{last_name}: #{email}".strip
   end
 end
