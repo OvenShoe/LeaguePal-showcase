@@ -76,9 +76,9 @@ class Admin::CompetitionsController < ApplicationController
   end
 
   def generate_league
-    # Lock someone out of double scaffolding the competition
     raise ArgumentError, "League scaffold has already been generated" if @competition.scaffold_generated?
     ties = params[:ties].to_i
+    @teams = @competition.teams
     team_count = @competition.teams.count
 
     raise ArgumentError, "At least two teams are required to generate a league" if team_count < 2
@@ -90,11 +90,15 @@ class Admin::CompetitionsController < ApplicationController
       end
 
       generate_games(team_count)
+      populate_league
     end
 
     @competition.update!(scaffold_generated: true)
     redirect_to admin_competition_path(@competition), notice: "League scaffold created successfully."
   rescue StandardError => e
+    Rails.logger.error("Generate league failed: #{e.class}")
+    Rails.logger.error("Message: #{e.message}")
+    Rails.logger.error("Backtrace: #{e.backtrace.first(10).join("\n")}")
     redirect_to admin_competition_path(@competition), alert: "Failed to generate league: #{e.message}"
   end
 
@@ -107,28 +111,69 @@ class Admin::CompetitionsController < ApplicationController
   end
 
   def populate_league
-    # Form promt to send open_ai_api:
-    # "I am organising a sports competition using a ruby on rails app. I have generated multiple empty rounds and games.
-    # Each team needs to play each other #{ties} times and the maximum number a team can play is #{games_a_week} times.
-    # The competition starts at #{@competition.start_date} and ends on #{@competition.end_date}.
-    # If there is an uneven amount of teams a bye round can be designated by allocating the odd team as team_1_id to the extra game and setting bye to true. For example game.bye: true, game.team_1_id: odd_team "
-    # "Here are the teams and the rounds: #{rounds.all}, games: #{games.all}, teams: #{teams.all}"
-    # Open ai to respond with JSON as follows:
-    # round_1 = {
-    #   round_id: round_id,
-    #   games = [{game_id: game_id, team_1_id: team_1_id, team_2_id: team_2_id, bye: false, start_time: start_time, location: location},
-    #             {game_id: game_id, team_1_id: team_1_id, team_2_id: team_2_id, bye: false, start_time: start_time, location: location}, etc...]
-    # }
-    # Parse the response and update the games with the team ids, start times, and bye status.
-    # Save the updated games to the database.
-    # Handle any errors that may occur during the process and provide feedback to the admin.
-    # Note: The actual implementation of the OpenAI API call and response parsing is not included in this method and should be handled separately.
-    # Example of parsing the response:
-    # response = JSON.parse(open_ai_response)
-    { round_id: response[:round_id],
-      team_a_id: response[:team_1_id],
-      team_b_id: response[:team_2_id],
-      starts_at: response[:start_time] }
+    @rounds = @competition.rounds
+    matchup_limit = params[:ties].to_i
+    matchups = {}
+
+    Rails.logger.info("Starting populate_league: #{@rounds.count} rounds, matchup_limit: #{matchup_limit}")
+
+    @rounds.each_with_index do |round, round_idx|
+      Rails.logger.info("Processing round #{round_idx} with #{round.games.count} games")
+
+      teams = @teams.shuffle
+      @round_teams = []
+
+      round.games.each_with_index do |game, game_idx|
+        Rails.logger.info("  Game #{game_idx}: team_1=#{game.team_1_id}, team_2=#{game.team_2_id}")
+
+        teams.each do |team|
+          break if game.has_teams?
+
+          if @round_teams.include?(team)
+            Rails.logger.debug("    Team #{team.id} already used in round")
+            next
+          else
+            # Only assign opponent if one team slot is filled
+            unless game.team_1_present? || game.team_2_present?
+              Rails.logger.info("    No opponent yet, assigning team #{team.id} to team_1")
+              game.update!(team_1_id: team.id)
+              @round_teams << team
+              next
+            end
+
+            opponent = game.team_1_present? ? game.team_1 : game.team_2
+            key = [ team.id, opponent&.id ].sort.join("-")
+
+            if opponent && matchups[key].to_i >= matchup_limit
+              Rails.logger.debug("    Matchup limit reached for key #{key}")
+              next
+            end
+
+            game.update!(team_2_id: team.id)
+            @round_teams << team
+
+            if game.has_teams?
+              matchups[key] = matchups[key].to_i + 1
+              Rails.logger.info("    Game complete: #{game.team_1_id} vs #{game.team_2_id}, count: #{matchups[key]}")
+              break
+            end
+          end
+        end
+      end
+
+      # Clean up empty games and mark byes
+      round.games.each_with_index do |game, game_idx|
+        if game.empty?
+          Rails.logger.info("    Destroying empty game #{game_idx}")
+          game.destroy
+        elsif game.bye?
+          Rails.logger.info("    Marking game #{game_idx} as bye (only one team)")
+          game.update!(bye: true)
+        end
+      end
+
+      Rails.logger.info("Round #{round_idx} complete. Matchups: #{matchups}")
+    end
   end
 
   private
