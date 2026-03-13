@@ -55,3 +55,19 @@
     </div>
   <% end %>
 <% end %>
+
+
+
+<% if @competition.scaffold_generated? %>
+  <% round_count = 1 %>
+  <%# Iterate over each round %>
+  <% @competition.rounds.each do |round| %>
+  <h2> Round: <%= round_count %></h2>
+  <%# Iterate over every game %>
+    <% round.games.each do |game| %>
+      <p>Game Id: <%= game.id%> </p>
+      <p>Team 1: <%= Team.find(game.team_1_id).name%></p>
+      <p>Team 2: <%= Team.find(game.team_2_id).name%></p>
+    <% end %>
+  <% end %>
+<% end %>
