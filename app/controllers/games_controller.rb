@@ -38,7 +38,8 @@ class GamesController < ApplicationController
   def update
     respond_to do |format|
       if @game.update(game_params)
-        format.html { redirect_to @game, notice: "Game was successfully updated.", status: :see_other }
+        # Redirect to round#show
+        format.html { redirect_to admin_round_path(@game.round), notice: "Game was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @game }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -49,10 +50,11 @@ class GamesController < ApplicationController
 
   # DELETE /games/1 or /games/1.json
   def destroy
+    @round = @game.round
     @game.destroy!
 
     respond_to do |format|
-      format.html { redirect_to games_path, notice: "Game was successfully destroyed.", status: :see_other }
+      format.html { redirect_to admin_round_path(), notice: "Game was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -63,8 +65,8 @@ class GamesController < ApplicationController
       @game = Game.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
-    def game_params
-      params.fetch(:game, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def game_params
+    params.require(:game).permit(:team_1_id, :team_2_id, :location, :start_time)
+  end
 end

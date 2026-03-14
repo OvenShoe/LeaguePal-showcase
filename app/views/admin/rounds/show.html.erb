@@ -1,0 +1,106 @@
+<h2>views/admin/rounds/show.html.erb</h2>
+
+<%# Edit round:  %>
+<%# Option to give ceremonial name  ✅%>
+<%# Option to delete round  %>
+<%# Form to edit each game ✅ %>
+<%# Option to delete  game %>
+
+<%= simple_form_for([:admin, @round], local: true) do |f| %>
+    <%= f.error_notification %>
+    <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+
+    <div class="form-inputs">
+        <%= f.input :name, label: "round Name i.e Semi Final 1" %>
+    </div>
+
+    <div class="form-actions">
+        <%= f.button :submit, "Update Round Name" %>
+    </div>
+<% end %>
+
+<%= simple_form_for(@round, url: admin_round_path(@round), method: :delete, local: true) do |f| %>
+  <%= f.button :submit, "Delete Round",
+    data: { turbo_confirm: "Delete this round?" },
+    style: "
+      display:block;
+      margin-top:4px;
+      background:#e53e3e;
+      color:white;
+      border:none;
+      border-radius:4px;
+      padding:3px 10px;
+      cursor:pointer;
+      font-size:12px;
+    " %>
+<% end %>
+
+<% @games.each do |game| %>
+  <%# CONTENT DIV %>
+  <div class="container">
+    <%= simple_form_for(game, url: game_path(game), method: :patch, local: true) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="form-inputs">
+            <%= f.input :team_1_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true, label: "Team 1" %>
+            <%= f.input :team_2_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true, label: "Team 2" %>
+            <%= f.input :location, label: "Location" %>
+                        <div>
+            <%= f.label :start_time, "Start Time" %>
+            <div class="flex gap-2 items-center">
+              <div class="p-4">
+                <%= f.time_select :start_time, ampm: true, ignore_date: true, minute_step: 5 %>
+              </div>
+              <div class ="p-4">
+                <%= f.date_select :start_time, order: [:month,:day, :year] %>
+              </div>
+            </div>
+        </div>
+        </div>
+        <div class="form-actions flex justify-between">
+            <%= f.button :submit, "Update Game" %>
+            <%= f.button :submit, "Delete game",
+          name: "_method",
+          value: "delete",
+          formmethod: "post",
+          formaction: game_path(game),
+          data: { turbo_confirm: "Delete this game?" },
+          style: "
+            display:block;
+            margin-top:4px;
+            background:#e53e3e;
+            color:white;
+            border:none;
+            border-radius:4px;
+            padding:3px 10px;
+            cursor:pointer;
+            font-size:12px;
+          " %>
+        </div>
+    <% end %>
+
+    <%= link_to "Back", admin_competitions_path %>
+  </div>
+<% end %>
+
+<%# Fail safe is games are nuked %>
+<% if @games_count < ( @teams_count/2 )%>
+  <div class="mt-10">
+    <h2>Create Game:</h2>
+    <%= simple_form_for(Game.new, url: games_path, method: :post, local: true) do |f| %>
+      <%= f.input :team_1_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
+      <%= f.input :team_2_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
+      <%= f.input :location %>
+        <div class="flex gap-2 items-center">
+          <div class="p-4">
+            <%= f.time_select :start_time, ampm: true, ignore_date: true, minute_step: 5 %>
+          </div>
+          <div class ="p-4">
+            <%= f.date_select :start_time, order: [:month,:day, :year] %>
+          </div>
+        </div>
+      <%= f.hidden_field :round_id, value: @round.id %>
+      <%= f.button :submit, "Create Game" %>
+    <% end %>
+  </div>
+<% end %>
