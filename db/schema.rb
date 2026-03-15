@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_14_001933) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,6 +78,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
   create_table "rounds", force: :cascade do |t|
     t.bigint "competition_id", null: false
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["competition_id"], name: "index_rounds_on_competition_id"
   end
@@ -102,13 +103,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "team_id", null: false
-    t.string "token"
+    t.string "token", default: "", null: false
     t.string "token_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
     t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
     t.index ["role"], name: "index_team_invitations_on_role"
     t.index ["team_id"], name: "index_team_invitations_on_team_id"
+    t.index ["token"], name: "index_team_invitations_on_token", unique: true
     t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
   end
 

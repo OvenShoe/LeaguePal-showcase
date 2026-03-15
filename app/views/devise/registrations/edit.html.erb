@@ -29,7 +29,7 @@
         <small>Click to use</small>
       <% end %>
 
-      <%= button_to delete_ai_avatar_path(avatar.id),
+      <%= button_to "Delete Round", admin_round_path(@round),
           method: :delete,
           data: { confirm: "Delete this avatar?", turbo_confirm: "Delete this avatar?" },
           style: "
