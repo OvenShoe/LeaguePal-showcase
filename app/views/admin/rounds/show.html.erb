@@ -35,7 +35,7 @@
     " %>
 <% end %>
 
-<% @games.each do |game| %>
+<% @games.order(:id).each do |game| %>
   <%# CONTENT DIV %>
   <div class="container">
     <%= simple_form_for(game, url: game_path(game), method: :patch, local: true) do |f| %>
@@ -87,7 +87,7 @@
 <% if @games_count < ( @teams_count/2 )%>
   <div class="mt-10">
     <h2>Create Game:</h2>
-    <%= simple_form_for(Game.new, url: games_path, method: :post, local: true) do |f| %>
+    <%= simple_form_for(Game.new(round: @round), url: games_path, method: :post, local: true) do |f| %>
       <%= f.input :team_1_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
       <%= f.input :team_2_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
       <%= f.input :location %>

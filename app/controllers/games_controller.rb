@@ -22,13 +22,22 @@ class GamesController < ApplicationController
   # POST /games or /games.json
   def create
     @game = Game.new(game_params)
+    @round = @game.round
+
+    unless @round
+      respond_to do |format|
+        format.html { redirect_to admin_competitions_path, alert: "Round is required to create a game.", status: :see_other }
+        format.json { render json: { error: "round_id is required" }, status: :unprocessable_entity }
+      end
+      return
+    end
 
     respond_to do |format|
       if @game.save
-        format.html { redirect_to @game, notice: "Game was successfully created." }
+        format.html { redirect_to admin_round_path(@round), notice: "Game was successfully created." }
         format.json { render :show, status: :created, location: @game }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to admin_round_path(@round), alert: @game.errors.full_messages.to_sentence, status: :see_other }
         format.json { render json: @game.errors, status: :unprocessable_entity }
       end
     end
@@ -54,7 +63,7 @@ class GamesController < ApplicationController
     @game.destroy!
 
     respond_to do |format|
-      format.html { redirect_to admin_round_path(), notice: "Game was successfully destroyed.", status: :see_other }
+      format.html { redirect_to admin_round_path(@round), notice: "Game was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -67,6 +76,6 @@ class GamesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def game_params
-    params.require(:game).permit(:team_1_id, :team_2_id, :location, :start_time)
+    params.require(:game).permit(:team_1_id, :team_2_id, :location, :start_time, :round_id)
   end
 end
