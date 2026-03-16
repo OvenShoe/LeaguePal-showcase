@@ -114,22 +114,32 @@ class Admin::CompetitionsController < ApplicationController
     @rounds = @competition.rounds
     matchup_limit = params[:ties].to_i
     matchups = {}
+    team_count = @teams.count
+    bye_rotation = @teams.to_a.cycle
 
     Rails.logger.info("Starting populate_league: #{@rounds.count} rounds, matchup_limit: #{matchup_limit}")
 
     @rounds.each_with_index do |round, round_idx|
       Rails.logger.info("Processing round #{round_idx} with #{round.games.count} games")
 
-      teams = @teams.shuffle
-      @round_teams = []
+      bye_team = team_count.odd? ? bye_rotation.next : nil
+      available_teams = @teams.reject { |team| team == bye_team }.shuffle
+      round_teams = []
 
       round.games.each_with_index do |game, game_idx|
         Rails.logger.info("  Game #{game_idx}: team_1=#{game.team_1_id}, team_2=#{game.team_2_id}")
 
-        teams.each do |team|
-          break if game.has_teams?
+        # Assign roatating bye teams if the @teams.count.odd?
+        if bye_team && !round_teams.include?(bye_team) && game.empty?
+          game.update!(team_1_id: bye_team.id, bye: :true)
+          round_teams << bye_team
+          Rails.logger.info("    Assigned bye to team #{bye_team.id}")
+          next
+        end
 
-          if @round_teams.include?(team)
+        available_teams.each do |team|
+          break if game.has_teams?
+          if round_teams.include?(team)
             Rails.logger.debug("    Team #{team.id} already used in round")
             next
           else
@@ -137,7 +147,7 @@ class Admin::CompetitionsController < ApplicationController
             unless game.team_1_present? || game.team_2_present?
               Rails.logger.info("    No opponent yet, assigning team #{team.id} to team_1")
               game.update!(team_1_id: team.id)
-              @round_teams << team
+              round_teams << team
               next
             end
 
@@ -150,7 +160,7 @@ class Admin::CompetitionsController < ApplicationController
             end
 
             game.update!(team_2_id: team.id)
-            @round_teams << team
+            round_teams << team
 
             if game.has_teams?
               matchups[key] = matchups[key].to_i + 1
@@ -168,7 +178,7 @@ class Admin::CompetitionsController < ApplicationController
           game.destroy
         elsif game.bye?
           Rails.logger.info("    Marking game #{game_idx} as bye (only one team)")
-          game.update!(bye: true)
+          game.update!(bye: :true)
         end
       end
 
