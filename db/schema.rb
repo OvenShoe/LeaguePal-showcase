@@ -103,14 +103,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_14_001933) do
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "team_id", null: false
-    t.string "token", default: "", null: false
+    t.string "token"
     t.string "token_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
     t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
     t.index ["role"], name: "index_team_invitations_on_role"
     t.index ["team_id"], name: "index_team_invitations_on_team_id"
-    t.index ["token"], name: "index_team_invitations_on_token", unique: true
     t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
   end
 
