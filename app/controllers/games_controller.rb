@@ -8,6 +8,20 @@ class GamesController < ApplicationController
 
   # GET /games/1 or /games/1.json
   def show
+    # Handles when either team is unassigned as well as a bye
+    @stat = Stat.new
+    @game.team_1_present? ? @team_1 = Team.find(@game.team_1_id) : @team_1 = "No assigned team"
+    @team_2 = Team.find(@game.team_2_id) if @game.team_2_present?
+    @game.bye? ? @team_2 = "BYE" : @team_2 = "No assigned team"
+    if @game.start_time.present?
+      @start_time = @game.start_time.strftime("%-l:%M %p")
+      @date = @game.start_time.strftime("%A %-d#{@game.start_time.day.ordinal} %B, %Y")
+    else
+      @date = "TBA"
+      @start_time = "TBA"
+    end
+    # define a player list to select from when makinga score.
+    @players = create_player_list_names(@game)
   end
 
   # GET /games/new
@@ -69,7 +83,21 @@ class GamesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+    def create_player_list_names(game)
+      # find both teams
+      list_names = []
+      if game.team_1_present?
+        team_1 = Team.find(game.team_1_id)
+        team_1.team_members.each { |player| list_names << [ player.list_name, player.user.id ] }
+      end
+      if game.team_2_present?
+        team_2 = Team.find(game.team_2_id)
+        team_2.team_members.each { |player| list_names << [ player.list_name, player.user.id ] }
+      end
+      # Return array of list names
+      list_names.uniq
+    end
+
     def set_game
       @game = Game.find(params.expect(:id))
     end
