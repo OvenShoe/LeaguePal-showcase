@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :games
+  resources :games do
+    resources :stats
+  end
   resources :rounds
   devise_for :users, controllers: { registrations: "users/registrations" }
 
