@@ -6,4 +6,7 @@ class TeamMember < ApplicationRecord
   belongs_to :user
 
   has_many :trophies, dependent: :nullify
+  def list_name
+    "#{self.user.first_name} #{self.user.last_name} - #{self.team.name}"
+  end
 end

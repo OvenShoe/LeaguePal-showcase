@@ -24,8 +24,7 @@ class Game < ApplicationRecord
   end
 
   def bye?
-    # Return true if team_1_id is present and team_2_id is nil
-    (self.team_1_id.present? && self.team_2_id.nil?) || (self.team_1_id.nil? && self.team_2_id.present?)
+    team_1_id.present? ^ team_2_id.present?
   end
 
   def empty?
