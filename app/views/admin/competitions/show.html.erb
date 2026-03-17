@@ -56,6 +56,18 @@
   <% end %>
 <% end %>
 
+<% if @teams.count >= 2 && !@competition.scaffold_generated? %>
+  <%= simple_form_for @competition, url: generate_league_admin_competition_path(@competition), local: true, method: :post do |f| %>
+    <div class="form-inputs">
+      <%= label_tag :ties, "Times each team plays every other team" %>
+      <%= number_field_tag :ties, 1, min: 1 %>
+    </div>
+    <div class="form-actions">
+      <%= f.button :submit, "Generate league scaffold" %>
+    </div>
+  <% end %>
+<% end %>
+
 
 <% if @competition.scaffold_generated? %>
   <% round_count = 1 %>
@@ -67,7 +79,7 @@
         <% if round.name.present? %>
           <h2><%= round.name %></h2>
         <% end %>
-        <%= link_to "Edit round", admin_round_path(round.id) %>
+        <%= link_to "Edit rounds and teams", admin_round_path(round.id) %>
       </div>
       <div class="px-4 py-5 sm:p-6">
         <%# Iterate over every game %>
@@ -77,9 +89,10 @@
             <p>Game Id: <%= game.id%> </p>
           </div>
           <div class="flex">
-            <p>Team 1: <%= Team.find(game.team_1_id).name%></p>
-            <p>Team 2: <%= Team.find(game.team_2_id).name%></p>
+            <p>Team 1: <%= game.team_1&.name || "TBD" %></p>
+            <p>Team 2: <%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></p>
           </div>
+        <%= link_to "View game and add stats", game_path(game) %> 
         <% end %>
       </div>
     </div>

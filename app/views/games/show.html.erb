@@ -6,8 +6,27 @@
   <% end %>
 
   <h1 class="font-bold text-4xl">Showing game</h1>
-
-  <%= render @game %>
+   
+  <%= render "/shared/matchcard" %>
+  <% if current_user.is_admin? %>
+    <div>
+      <div>
+        <h2>Add another stat:</h2>
+      </div>
+      <div>
+        <%= simple_form_for [@game, Stat.new] do |f| %>
+          <%= f.input :user_id, 
+                      label: "Player", 
+                      collection: @players, 
+                      prompt: "Select a player" %>
+          <%= f.input :label, label: "Stat label" %>
+          <%= f.input :value, label: "Value" %>
+          <%= f.button :submit, "Add stat", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  
 
   <%= link_to "Edit this game", edit_game_path(@game), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
   <%= link_to "Back to games", games_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
