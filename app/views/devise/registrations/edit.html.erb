@@ -2,25 +2,20 @@
 
 <h3>Your AI Avatar Gallery</h3>
 
-<div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+<div class="flex gap-4 flex-wrap mb-5">
   <% resource.ai_avatars.last(8).reverse_each do |avatar| %>
 
     <% selected = resource.avatar.attached? && resource.avatar.blob_id == avatar.blob_id %>
 
-    <div style="text-align:center; position:relative;">
+    <div class="text-center relative">
 
       <%= button_to set_avatar_path(avatar.id),
           method: :post,
-          style: "border:none; background:none; padding:0;" do %>
+          class: "border-0 bg-none p-0" do %>
         <%= image_tag avatar,
             width: 120,
             height: 120,
-            style: "
-              border-radius:50%;
-              object-fit:cover;
-              cursor:pointer;
-              border:5px solid #{selected ? '#4CAF50' : '#ddd'};
-            " %>
+            class: "rounded-full object-cover cursor-pointer #{selected ? 'border-4 border-green-500' : 'border-4 border-gray-300'}" %>
       <% end %>
 
       <% if selected %>
