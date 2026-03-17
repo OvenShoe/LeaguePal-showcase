@@ -6,7 +6,7 @@
   <% end %>
 
   <h1 class="font-bold text-4xl">Showing game</h1>
-   
+
   <%= render "/shared/matchcard" %>
   <% if current_user.is_admin? %>
     <div>
@@ -15,9 +15,9 @@
       </div>
       <div>
         <%= simple_form_for [@game, Stat.new] do |f| %>
-          <%= f.input :user_id, 
-                      label: "Player", 
-                      collection: @players, 
+          <%= f.input :user_id,
+                      label: "Player",
+                      collection: @players,
                       prompt: "Select a player" %>
           <%= f.input :label, label: "Stat label", as: :select, collection: @stat_labels.map { |l| [l.to_s.humanize, l] }, prompt: "Select a stat" %>
           <%= f.input :value, label: "Value" %>
@@ -33,11 +33,11 @@
   <div class="mt-6">
     <div class="max-h-96 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-700 p-3 bg-white dark:bg-neutral-900">
       <h2 class="font-bold text-xl mb-2">Live stats</h2>
-      <%= render "stats/list", game: @game, stats: @game.stats.includes(:user).order(created_at: :desc) %>
+      <%= render "stats/list", game: @game, stats: @game.stats.includes(:user).order(created_at: :desc), can_edit: current_user.is_admin? %>
     </div>
   </div>
 
-  
+
 
   <% if current_user.is_admin? %>
     <%= link_to "Edit this game", admin_round_path(@game.round), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>

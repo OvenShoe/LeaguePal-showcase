@@ -1,9 +1,14 @@
-<li id="<%= dom_id(stat) %>" class="p-2 rounded bg-neutral-100 dark:bg-neutral-800">
-  <span class="font-medium"><%= stat.user&.name || "Unknown player" %></span>
-  <span class="text-xs text-neutral-500 ml-2">(<%= stat.user_team %>)</span>
-  <span>— <%= stat.label.to_s.humanize %>: <%= stat.value %></span>
-  <span class="text-xs opacity-70 ml-2"><%= l(stat.created_at, format: :short) %></span>
-  <% if current_user&.is_admin? %>
+<% team_name = stat.user_team %>
+<% is_team_1 = team_name == stat.game.team_1&.name %>
+<% side_class = is_team_1 ? "justify-start" : "justify-end" %>
+<% bubble_class = is_team_1 ? "bg-blue-100" : "bg-red-100" %>
+
+<li id="<%= dom_id(stat) %>" class="flex <%= side_class %>">
+  <div class="max-w-[75%] p-2 rounded <%= bubble_class %>">
+    <span class="font-medium"><%= stat.user&.name || "Unknown player" %></span>
+    <span class="text-xs text-neutral-500 ml-2">(<%= team_name %>)</span>
+    <span> - <%= stat.label.to_s.humanize %>: <%= stat.value %></span>
+    <span class="text-xs opacity-70 ml-2"><%= l(stat.created_at, format: :short) %></span>
     <%= link_to "Edit Stat", edit_game_stat_path(stat.game, stat), class: "ml-3 text-sm underline" %>
-  <% end %>
-  </li>
+  </div>
+</li>

@@ -42,13 +42,13 @@ class Stat < ApplicationRecord
         game,
         target: "team_1_score",
         partial: "games/score",
-        locals: { team_key: "team_1", score: team_1_score }
+        locals: { team_key: "team_1", score: team_1_score,  can_edit: false }
       )
       broadcast_replace_later_to(
         game,
         target: "team_2_score",
         partial: "games/score",
-        locals: { team_key: "team_2", score: team_2_score }
+        locals: { team_key: "team_2", score: team_2_score,  can_edit: false }
       )
     end
 end
