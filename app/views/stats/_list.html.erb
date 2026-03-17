@@ -1,0 +1,5 @@
+<ul id="<%= dom_id(game, :stats_list) %>" class="space-y-2">
+  <% stats.each do |stat| %>
+    <%= render "stats/stat", stat: stat %>
+  <% end %>
+</ul>
