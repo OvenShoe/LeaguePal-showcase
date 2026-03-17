@@ -6,3 +6,12 @@
   <%= f.input :value, label: "Value" %>
   <%= f.button :submit, "Update stat", class: "btn btn-primary" %>
 <% end %>
+<div class="mt-4 flex gap-3">
+  <%= link_to "Back to game", game_path(@game), class: "btn btn-secondary" %>
+
+  <%= button_to "Delete stat",
+      game_stat_path(@game, @stat),
+      method: :delete,
+      data: { turbo_confirm: "Delete this stat?" },
+      class: "btn btn-danger" %>
+</div>

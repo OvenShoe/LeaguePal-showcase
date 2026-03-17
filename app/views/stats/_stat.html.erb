@@ -3,4 +3,7 @@
   <span class="text-xs text-neutral-500 ml-2">(<%= stat.user_team %>)</span>
   <span>— <%= stat.label.to_s.humanize %>: <%= stat.value %></span>
   <span class="text-xs opacity-70 ml-2"><%= l(stat.created_at, format: :short) %></span>
-</li>
+  <% if current_user&.is_admin? %>
+    <%= link_to "Edit Stat", edit_game_stat_path(stat.game, stat), class: "ml-3 text-sm underline" %>
+  <% end %>
+  </li>

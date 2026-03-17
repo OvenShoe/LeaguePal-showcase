@@ -28,6 +28,21 @@ class GamesController < ApplicationController
     end
     # define a player list to select from when makinga score.
     @players = create_player_list_names(@game)
+    @stats = @game.stats
+
+    @team_1_score = if @team_1.is_a?(Team)
+      team_1_user_ids = @team_1.team_members.pluck(:user_id)
+      @game.stats.where(label: "goals", user_id: team_1_user_ids).sum(:value)
+    else
+      0
+    end
+
+     @team_2_score = if @team_2.is_a?(Team)
+      team_2_user_ids = @team_2.team_members.pluck(:user_id)
+      @game.stats.where(label: "goals", user_id: team_2_user_ids).sum(:value)
+     else
+      0
+     end
   end
 
   # GET /games/new
