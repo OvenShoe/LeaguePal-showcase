@@ -1,5 +1,6 @@
 <ul id="<%= dom_id(game, :stats_list) %>" class="space-y-2">
+  <% editable = local_assigns.fetch(:can_edit, false) %>
   <% stats.each do |stat| %>
-    <%= render "stats/stat", stat: stat %>
+  <%= render "stats/stat", stat: stat, game: game, can_edit: editable %>
   <% end %>
 </ul>
