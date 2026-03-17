@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
   # Use avatar in user edit and create forms
   has_one_attached :avatar
+  has_many_attached :ai_avatars
 
   has_many :competition_admins, dependent: :destroy
   has_many :competitions, through: :competition_admins

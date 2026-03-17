@@ -3,6 +3,8 @@
 class TeamInvitation < ApplicationRecord
   require "securerandom"
 
+  enum :status, { pending: 0, accepted: 1, rejected: 2, failed: 3 }, default: :pending
+
   belongs_to :team
   belongs_to :inviter, class_name: "User"
 
@@ -10,7 +12,9 @@ class TeamInvitation < ApplicationRecord
 
   validates :invitee_email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :token_digest, presence: true
+  validates :token, presence: true, uniqueness: true, on: :create
   validates :role, presence: true
+  validates :inviter, presence: true
 
   before_validation :ensure_token_digest, on: :create
   before_create :set_default_expires_at
@@ -27,6 +31,7 @@ class TeamInvitation < ApplicationRecord
       inviter: inviter,
       team: team,
       invitee_email: invitee_email.to_s.downcase,
+      token: raw_token,
       token_digest: token_digest,
       role: role,
       expires_at: expires_at
@@ -38,7 +43,7 @@ class TeamInvitation < ApplicationRecord
   # Accept the invitation and create the team membership for the provided user
   def accept!(user)
     transaction do
-      update!(accepted_at: Time.current)
+      update!(accepted_at: Time.current, status: :accepted)
       TeamMember.create!(team: team, user: user, role: self.role)
     end
   end
