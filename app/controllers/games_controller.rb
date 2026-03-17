@@ -8,11 +8,17 @@ class GamesController < ApplicationController
 
   # GET /games/1 or /games/1.json
   def show
+    @stat_labels = labels(@game)
     # Handles when either team is unassigned as well as a bye
     @stat = Stat.new
-    @game.team_1_present? ? @team_1 = Team.find(@game.team_1_id) : @team_1 = "No assigned team"
-    @team_2 = Team.find(@game.team_2_id) if @game.team_2_present?
-    @game.bye? ? @team_2 = "BYE" : @team_2 = "No assigned team"
+    @team_1 = @game.team_1_present? ? Team.find_by(id: @game.team_1_id) || "No assigned team" : "No assigned team"
+    @team_2 = if @game.bye?
+      "BYE"
+    elsif @game.team_2_present?
+      Team.find_by(id: @game.team_2_id) || "No assigned team"
+    else
+      "No assigned team"
+    end
     if @game.start_time.present?
       @start_time = @game.start_time.strftime("%-l:%M %p")
       @date = @game.start_time.strftime("%A %-d#{@game.start_time.day.ordinal} %B, %Y")
@@ -83,6 +89,29 @@ class GamesController < ApplicationController
   end
 
   private
+
+    def labels(game)
+      sport = game.round.competition.sport
+      case sport
+      when "Basketball"
+        %i[3pointers field_goals slam_dunks free_throws points rebounds assists steals blocks turnovers fouls]
+      when "Football"
+        %i[goals assists shots tackles dribbles duels_won saves yellow_cards red_cards possession]
+      when "Rugby"
+        %i[tries conversions penalties tackles lineouts scrums yellow_cards red_cards]
+      when "AFL"
+        %i[goals behinds kicks handballs marks tackles hitouts disposals]
+      when "Cricket"
+        %i[runs wickets catches run_outs stumpings maidens wides no_balls]
+      when "Tennis"
+        %i[aces double_faults first_serve_percentage winners unforced_errors break_points_won games_won sets_won]
+      when "netball"
+        %i[goals assists intercepts deflections turnovers center_passes rebounds]
+      else
+        %i[]
+      end
+    end
+
     def create_player_list_names(game)
       # find both teams
       list_names = []

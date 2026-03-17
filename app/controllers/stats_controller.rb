@@ -4,6 +4,7 @@ class StatsController < ApplicationController
   before_action :authenticate_user!
   before_action :validate_user, only: %i[ create edit update destroy ]
 
+
   # GET /stats or /stats.json
   def index
     @stats = Stat.all
@@ -14,15 +15,6 @@ class StatsController < ApplicationController
 
   # GET /stats/1/edit
   def edit
-    respond_to do |format|
-      if @stat.update(stat_params)
-        format.html { redirect_to new_game_stat_path(params[:game_id]), notice: "Round was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @round }
-      else
-        format.html { redirect_to game_path(@game), status: :unprocessable_entity }
-        format.json { render json: @stat.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
   # POST /stats or /stats.json
@@ -44,13 +36,13 @@ class StatsController < ApplicationController
           "[Stats#create] success stat_id=#{@stat.id} game_id=#{@game.id} user_id=#{@stat.user_id}"
         )
         format.html { redirect_to game_path(@game), notice: "stat was successfully created." }
-        format.json { render :show, status: :created, location: @stat }
+        format.turbo_stream { head :ok }
       else
         Rails.logger.warn(
           "[Stats#create] failed game_id=#{@game.id} errors=#{@stat.errors.full_messages.join(' | ')}"
         )
-        format.html { redirect_to game_path(@game), status: :unprocessable_entity }
-        format.json { render json: @stat.errors, status: :unprocessable_entity }
+        format.html { redirect_to game_path(@game), alert: @stat.errors.full_messages.to_sentence }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("stat_form", partial: "stats/form", locals: { game: @game, stat: @stat }), status: :unprocessable_entity }
       end
     end
   rescue => e

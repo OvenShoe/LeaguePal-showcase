@@ -19,16 +19,29 @@
                       label: "Player", 
                       collection: @players, 
                       prompt: "Select a player" %>
-          <%= f.input :label, label: "Stat label" %>
+          <%= f.input :label, label: "Stat label", as: :select, collection: @stat_labels.map { |l| [l.to_s.humanize, l] }, prompt: "Select a stat" %>
           <%= f.input :value, label: "Value" %>
           <%= f.button :submit, "Add stat", class: "btn btn-primary" %>
         <% end %>
       </div>
     </div>
   <% end %>
+
+
+  <%= turbo_stream_from @game %>
+
+  <div class="mt-6">
+    <div class="max-h-96 overflow-y-auto rounded-md border border-neutral-200 dark:border-neutral-700 p-3 bg-white dark:bg-neutral-900">
+      <h2 class="font-bold text-xl mb-2">Live stats</h2>
+      <%= render "stats/list", game: @game, stats: @game.stats.includes(:user).order(created_at: :desc) %>
+    </div>
+  </div>
+
   
 
-  <%= link_to "Edit this game", edit_game_path(@game), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <% if current_user.is_admin? %>
+    <%= link_to "Edit this game", admin_round_path(@game.round), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <% end %>
   <%= link_to "Back to games", games_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
   <%= button_to "Destroy this game", @game, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
 </div>
