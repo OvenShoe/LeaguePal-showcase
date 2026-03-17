@@ -2,8 +2,9 @@
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>
-      <p class="text-sm font-bold text-green-600">Time</p>
-      <p class="text-sm text-neutral-500 dark:text-neutral-400">Date</p>
+      <p class="text-sm font-bold text-green-600"> 
+        <%= @start_time %></p>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= @date  %></p>
     </div>
 
     <!-- Teams -->
@@ -11,7 +12,9 @@
       <!-- Home Team -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">        
+          <%= @game.team_1_present? ? @team_1.name : @team_1 %>
+        </span>
       </div>
 
       <!-- VS -->
@@ -20,7 +23,9 @@
       <!-- Away Team -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">   
+           <%= @game.team_2_present? ? @team_2.name : @team_2 %>
+        </span>
       </div>
     </div>
 
@@ -28,3 +33,4 @@
     <p class="text-sm text-neutral-500 dark:text-neutral-400">Location</p>
   </div>
 </div>
+
