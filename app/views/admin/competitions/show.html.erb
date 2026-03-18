@@ -3,6 +3,7 @@
 <p>Sport: <%= @competition.sport %></p>
 <p>Start Date: <%= @competition.start_date %></p>
 <p>End Date: <%= @competition.end_date %></p>
+<%= link_to "Edit Competition", edit_admin_competition_path(@competition) %>
 
 <h2 class="mt-4">Teams</h2>
 <ul>
@@ -50,12 +51,19 @@
       <%= label_tag :ties, "Times each team plays every other team" %>
       <%= number_field_tag :ties, 1, min: 1 %>
     </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Locations</label>
+      <% @competition.teams.count.times do  %>
+          <%= f.input_field :locations, name: "competition[locations][]", value: @competition.locations[0], placeholder: "Location 1", class: "form-control mb-2" %>
+      <% end %>        
+    </div>
+    
     <div class="form-actions">
       <%= f.button :submit, "Generate league scaffold" %>
     </div>
   <% end %>
 <% end %>
-
 
 <% if @competition.scaffold_generated? %>
   <% round_count = 1 %>

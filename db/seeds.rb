@@ -35,7 +35,7 @@ puts "User created: #{temp_comp_admin_user.first_name} #{temp_comp_admin_user.la
 temp_comp_admin = CompetitionAdmin.create!(user_id: temp_comp_admin_user.id)
 puts "CompetitionAdmin created for user: #{temp_comp_admin.user.first_name} 💻"
 
-competition = Competition.create!(competition_admin_id: temp_comp_admin.id, sport: "Tennis")
+competition = Competition.create!(competition_admin_id: temp_comp_admin.id, sport: "Netball")
 puts "Competition created: #{competition.name} 🥍"
 
 puts "Creating team and users for associations...🏗"

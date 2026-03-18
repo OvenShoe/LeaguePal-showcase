@@ -116,7 +116,7 @@ class GamesController < ApplicationController
     def labels(game)
       sport = game.round.competition.sport
       case sport
-      when "netball"
+      when "Netball"
         %i[goals assists intercepts deflections turnovers center_passes rebounds]
       when "Football"
         %i[goals assists shots tackles dribbles duels_won saves yellow_cards red_cards possession]

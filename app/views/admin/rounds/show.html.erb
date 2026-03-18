@@ -62,7 +62,7 @@
                 <%= f.time_select :start_time, minute_step: 5, ampm: true, ignore_date: true %>
               </div>
               <div class ="p-4">
-                <%= f.date_select :start_time, order: [:month,:day, :year] %>
+                <%= f.date_select :start_time, order: [ :day, :month, :year ] %>
               </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
             <%= f.time_select :start_time, ampm: true, ignore_date: true, minute_step: 5 %>
           </div>
           <div class ="p-4">
-            <%= f.date_select :start_time, order: [:month,:day, :year] %>
+            <%= f.date_select :start_time, order: [ :day, :month, :year ] %>
           </div>
         </div>
       <%= f.hidden_field :round_id, value: @round.id %>

@@ -8,9 +8,44 @@
         <div class="form-inputs">
             <%= f.input :name, label: "Competition Name" %>
             <%= f.input :sport, collection: Competition.sports.keys.map { |key| [key, key] }, include_blank: false, label: "Sport" %>
-            <%= f.input :start_date, as: :datetime %>
-            <%= f.input :end_date, as: :datetime %>
+            <%= f.input :start_date, as: :datetime, order: [ :day, :month, :year ] %>
+            <%= f.input :end_date, as: :datetime, order: [ :day, :month, :year ] %>
         </div>
+
+        <% if !@competition.scaffold_generated? %>
+            <div class="flex justify-between">
+                <div class="flex">
+                    <%= f.input :game_days,
+                        as: :check_boxes,
+                        collection: [
+                        ["Monday", 1],
+                        ["Tuesday", 2],
+                        ["Wednesday", 3],
+                        ["Thursday", 4],
+                        ["Friday", 5],
+                        ["Saturday", 6],
+                        ["Sunday", 0]
+                        ],
+                        include_hidden: false,
+                        label: "Game days" %>
+
+                </div>
+                <div class="flex">
+                    <%= f.input :start_times,
+                            as: :check_boxes,
+                            collection: [
+                                ["09:00", "09:00"],
+                                ["11:00", "11:00"],
+                                ["13:00", "13:00"],
+                                ["15:00", "15:00"],
+                                ["17:30", "17:30"],
+                                ["19:00", "19:00"]
+                            ],
+                            include_hidden: false,
+                            label: "Game times" %>
+                </div>
+            </div>
+        <% end %>
 
         <div class="form-actions">
             <%= f.button :submit %>
