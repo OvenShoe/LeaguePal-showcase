@@ -1,5 +1,5 @@
 class Admin::CompetitionsController < ApplicationController
-  before_action :set_competition, only: %i[ show edit update create_team send_invite generate_league ]
+  before_action :set_competition, only: %i[ show edit update create_team send_invite generate_league add_game_dates ]
 
   def index
     @competitions = Competition.all
@@ -20,12 +20,10 @@ class Admin::CompetitionsController < ApplicationController
     if @competition.save
       redirect_to admin_competition_path(@competition)
     else
-      render :new
+      flash.now[:alert] = "Please fix the errors below."
+      render :new, status: :unprocessable_entity
     end
   end
-
-
-
 
   def edit
   end
@@ -77,20 +75,50 @@ class Admin::CompetitionsController < ApplicationController
 
   def generate_league
     raise ArgumentError, "League scaffold has already been generated" if @competition.scaffold_generated?
-    ties = params[:ties].to_i
+
+    permitted = generate_league_params
+    ties = permitted[:ties].to_i
+    comp = permitted[:competition] || ActionController::Parameters.new
+
+    game_days = if comp.key?(:game_days) || comp.key?("game_days")
+                  Array(comp[:game_days] || comp["game_days"]).reject(&:blank?).map(&:to_i)
+    else
+                  Array(@competition.game_days)
+    end
+
+    start_times = if comp.key?(:start_times) || comp.key?("start_times")
+                    Array(comp[:start_times] || comp["start_times"]).reject(&:blank?)
+    else
+                    Array(@competition.start_times)
+    end
+
+    locations = if comp.key?(:locations) || comp.key?("locations")
+                  Array(comp[:locations] || comp["locations"]).reject(&:blank?)
+    else
+                  Array(@competition.locations)
+    end
+
+    raise ArgumentError, "Please select at least one game day" if game_days.empty?
+    raise ArgumentError, "Please select at least one start time" if start_times.empty?
+
+    @competition.update!(
+      game_days: game_days,
+      start_times: start_times,
+      locations: locations
+    )
+
     @teams = @competition.teams
-    team_count = @competition.teams.count
+    team_count = @teams.count
+    locations = Array(@competition.locations).reject(&:blank?)
 
     raise ArgumentError, "At least two teams are required to generate a league" if team_count < 2
     raise ArgumentError, "Ties must be greater than 0" if ties <= 0
 
     ActiveRecord::Base.transaction do
-      round_count_for(team_count, ties).times do
-        @competition.rounds.create!
-      end
-
+      round_count_for(team_count, ties).times { @competition.rounds.create! }
       generate_games(team_count)
       populate_league
+      add_game_dates
     end
 
     @competition.update!(scaffold_generated: true)
@@ -186,6 +214,32 @@ class Admin::CompetitionsController < ApplicationController
     end
   end
 
+  def add_game_dates
+    day_indexes = Array(@competition.game_days).map(&:to_i).uniq.sort
+    start_times = Array(@competition.start_times).map(&:to_s).map(&:strip).reject(&:blank?).uniq
+    locations  = Array(@competition.locations).map(&:to_s).map(&:strip).reject(&:blank?).uniq
+
+    raise ArgumentError, "Please select at least one game day" if day_indexes.empty?
+    raise ArgumentError, "Please select at least one start time" if start_times.empty?
+    raise ArgumentError, "Please add at least one location" if locations.empty?
+    raise ArgumentError, "Competition start/end dates are required" if @competition.start_date.blank? || @competition.end_date.blank?
+
+    slots = build_game_slots(
+      start_date: @competition.start_date.to_date,
+      end_date: @competition.end_date.to_date,
+      day_indexes: day_indexes,
+      start_times: start_times,
+      locations: locations
+    )
+
+    games = @competition.games.order(:round_id, :id).reject(&:bye?)
+    raise ArgumentError, "Not enough date/time/location slots to generate the league" if slots.size < games.size
+
+    games.zip(slots).each do |game, slot|
+      game.update!(start_time: slot[:start_time], location: slot[:location])
+    end
+  end
+
   private
 
   def set_competition
@@ -197,7 +251,14 @@ class Admin::CompetitionsController < ApplicationController
   end
 
   def competition_params
-    params.require(:competition).permit(:name, :sport, :start_date, :end_date)
+    params.require(:competition).permit(:name, :sport, :start_date, :end_date,
+                                        game_days: [], start_times: [], locations: [])
+  end
+
+private
+
+  def generate_league_params
+    params.permit(:ties, competition: [ game_days: [], start_times: [], locations: [] ])
   end
 
   def team_params
@@ -211,5 +272,39 @@ class Admin::CompetitionsController < ApplicationController
 
   def games_per_round(team_count)
     team_count.odd? ? (team_count / 2) + 1 : team_count / 2
+  end
+
+  def schedule_params
+    params.permit(game_days: [], start_times: [])
+  end
+
+  def build_game_slots(start_date:, end_date:, day_indexes:, start_times:, locations:)
+    slots = []
+
+    (start_date..end_date).each do |date|
+      next unless day_indexes.include?(date.wday)
+
+      start_times.each do |time_str|
+        dt = parse_slot_datetime(date, time_str)
+
+        # same date/time can be reused per different location
+        locations.each do |location|
+          slots << { start_time: dt, location: location }
+        end
+      end
+    end
+
+    slots.sort_by { |s| [ s[:start_time], s[:location] ] }
+  end
+
+  def parse_slot_datetime(date, time_str)
+    # Accepts "17:40" or "5:40 PM"
+    if time_str.match?(/\A\d{1,2}:\d{2}\z/)
+      Time.zone.strptime("#{date} #{time_str}", "%Y-%m-%d %H:%M")
+    else
+      Time.zone.strptime("#{date} #{time_str}", "%Y-%m-%d %I:%M %p")
+    end
+  rescue ArgumentError
+    raise ArgumentError, "Invalid start time format: #{time_str}"
   end
 end

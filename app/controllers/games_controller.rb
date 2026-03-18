@@ -118,6 +118,8 @@ class GamesController < ApplicationController
       case sport
       when "netball"
         %i[goals assists intercepts deflections turnovers center_passes rebounds]
+      when "netball"
+        %i[goals assists intercepts deflections turnovers center_passes rebounds]
       when "Football"
         %i[goals assists shots tackles dribbles duels_won saves yellow_cards red_cards possession]
       # when "Rugby"

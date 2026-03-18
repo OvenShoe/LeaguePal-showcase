@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Competition < ApplicationRecord
-  enum :sport, { unassigned: 0, Basketball: 1, Football: 2, Rugby: 3, AFL: 4, Cricket: 5, Tennis: 6, netball: 7 }, default: :unassigned
+  enum :sport, { unassigned: 0, Netball: 1, Football: 2 }, default: :unassigned
+  validates :sport, presence: true
   belongs_to :competition_admin
   has_many :rounds, dependent: :destroy
   has_many :teams, dependent: :destroy
