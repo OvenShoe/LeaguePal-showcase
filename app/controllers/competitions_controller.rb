@@ -5,7 +5,9 @@ class CompetitionsController < ApplicationController
   before_action :set_competition, only: %i[ show edit update ]
 
   def index
-    @competitions = Competition.all
+    # All user competitions
+    # @competitions = Competition.all
+    @competitions = Competition.joins(:teams).where(teams: { id: current_user.teams.select(:id) }).distinct
   end
 
   def show

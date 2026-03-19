@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,10 +53,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
     t.bigint "competition_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "end_date"
+    t.integer "game_days", default: [], null: false, array: true
+    t.string "locations", default: [], null: false, array: true
     t.string "name"
     t.boolean "scaffold_generated", default: false, null: false
-    t.integer "sport", default: 0, null: false
+    t.integer "sport", null: false
     t.datetime "start_date"
+    t.string "start_times", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.index ["competition_admin_id"], name: "index_competitions_on_competition_admin_id"
   end
@@ -78,6 +81,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_110000) do
   create_table "rounds", force: :cascade do |t|
     t.bigint "competition_id", null: false
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["competition_id"], name: "index_rounds_on_competition_id"
   end

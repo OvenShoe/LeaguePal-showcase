@@ -2,16 +2,25 @@
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>
-      <p class="text-sm font-bold text-green-600">Time</p>
-      <p class="text-sm text-neutral-500 dark:text-neutral-400">Date</p>
+      <p class="text-sm font-bold text-green-600">
+        <%= @start_time %></p>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= @date  %></p>
     </div>
 
     <!-- Teams -->
     <div class="flex items-center justify-center gap-8 w-full">
+      <div>
+        <%# Team_1 Score Here %>
+        <div id="team_1_score">
+          <h2 class="..."><%= @team_1_score || 0 %></h2>
+        </div>
+      </div>
       <!-- Home Team -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+          <%= @team_1.respond_to?(:name) ? @team_1.name : @team_1 %>
+        </span>
       </div>
 
       <!-- VS -->
@@ -20,11 +29,19 @@
       <!-- Away Team -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+            <%= @team_2.respond_to?(:name) ? @team_2.name : @team_2 %>
+        </span>
+      </div>
+      <div>
+        <%# Team_2 Score here %>
+        <div id="team_2_score">
+          <h2 class="..."><%= @team_2_score || 0 %></h2>
+        </div>
       </div>
     </div>
 
     <!-- Venue -->
-    <p class="text-sm text-neutral-500 dark:text-neutral-400">Location</p>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= @game.location %></p>
   </div>
 </div>

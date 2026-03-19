@@ -3,6 +3,7 @@
 <p>Sport: <%= @competition.sport %></p>
 <p>Start Date: <%= @competition.start_date %></p>
 <p>End Date: <%= @competition.end_date %></p>
+<%= link_to "Edit Competition", edit_admin_competition_path(@competition) %>
 
 <h2 class="mt-4">Teams</h2>
 <ul>
@@ -50,24 +51,49 @@
       <%= label_tag :ties, "Times each team plays every other team" %>
       <%= number_field_tag :ties, 1, min: 1 %>
     </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Locations</label>
+      <% @competition.teams.count.times do  %>
+          <%= f.input_field :locations, name: "competition[locations][]", value: @competition.locations[0], placeholder: "Location 1", class: "form-control mb-2" %>
+      <% end %>        
+    </div>
+    
     <div class="form-actions">
       <%= f.button :submit, "Generate league scaffold" %>
     </div>
   <% end %>
 <% end %>
 
-
-
 <% if @competition.scaffold_generated? %>
   <% round_count = 1 %>
   <%# Iterate over each round %>
-  <% @competition.rounds.each do |round| %>
-  <h2> Round: <%= round_count %></h2>
-  <%# Iterate over every game %>
-    <% round.games.each do |game| %>
-      <p>Game Id: <%= game.id%> </p>
-      <p>Team 1: <%= Team.find(game.team_1_id).name%></p>
-      <p>Team 2: <%= Team.find(game.team_2_id).name%></p>
-    <% end %>
+  <% @competition.rounds.order(:id).each do |round| %>
+    <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-red shadow-sm m-6">
+      <div class="px-4 py-5 sm:px-6">
+        <h2> Round: <%= round_count %></h2>
+        <% if round.name.present? %>
+          <h2><%= round.name %></h2>
+        <% end %>
+        <%= link_to "Edit rounds and teams", admin_round_path(round.id) %>
+      </div>
+      <div class="px-4 py-5 sm:p-6">
+        <%# Iterate over every game %>
+        <% round.games.each do |game| %>
+          <%# CONTENT DIV %>
+          <div class="p-4">
+            <p>Game Id: <%= game.id%> </p>
+          </div>
+          <div class="flex">
+            <p>Team 1: <%= game.team_1&.name || "TBD" %></p>
+            <p>Team 2: <%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></p>
+          </div>
+        <%= link_to "View game and add stats", game_path(game) %> 
+        <% end %>
+      </div>
+    </div>
+    <% round_count += 1 %>
   <% end %>
 <% end %>
+
+<%# Create Hidden round create via checkbox %>

@@ -9,6 +9,10 @@ class Admin::RoundsController < Admin::BaseController
 
   # GET /rounds/1 or /rounds/1.json
   def show
+    @games = @round.games
+    @teams = @round.competition.teams
+    @games_count = @games.count
+    @teams_count =  @teams.count
   end
 
   # GET /rounds/new
@@ -26,7 +30,8 @@ class Admin::RoundsController < Admin::BaseController
 
     respond_to do |format|
       if @round.save
-        format.html { redirect_to @round, notice: "Round was successfully created." }
+        # Redirect to competiton#show where the form to add a round will be
+        format.html { redirect_to admin_competition_path(@round.competition), notice: "Round was successfully created." }
         format.json { render :show, status: :created, location: @round }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +44,7 @@ class Admin::RoundsController < Admin::BaseController
   def update
     respond_to do |format|
       if @round.update(round_params)
-        format.html { redirect_to @round, notice: "Round was successfully updated.", status: :see_other }
+        format.html { redirect_to admin_round_path(@round), notice: "Round was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @round }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -50,10 +55,11 @@ class Admin::RoundsController < Admin::BaseController
 
   # DELETE /rounds/1 or /rounds/1.json
   def destroy
+    @competition = @round.competition
     @round.destroy!
 
     respond_to do |format|
-      format.html { redirect_to rounds_path, notice: "Round was successfully destroyed.", status: :see_other }
+      format.html { redirect_to admin_competition_path(@competition), notice: "Round was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -66,6 +72,6 @@ class Admin::RoundsController < Admin::BaseController
 
     # Only allow a list of trusted parameters through.
     def round_params
-      params.fetch(:round, {})
+      params.require(:round).permit(:name, :id)
     end
 end
