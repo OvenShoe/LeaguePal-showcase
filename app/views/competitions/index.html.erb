@@ -1,20 +1,15 @@
-<div class="container mx-auto px-4 py-4">
-</div>
-<div class="container mx-auto px-4 py-4">
 
-  <h2 class="font-bold text-2xl">Next Game</h1>
-  <h2 class="font-bold text-2xl mb-6">Next Game</h1>
-  <%= render "/shared/matchcard" %>
-  <h2 class="font-bold text-2xl mt-6">Competition Standings</h1>
-  <%= render "/shared/standingstable" %>
-    <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
-  <h2 class="font-bold text-2xl mb-2">Competition Statistics</h1>
-    <ul class="grid grid-cols-6 text-left w-full mb-4">
-      <li class="hover:font-bold">Attack</li>
-      <li class="hover:font-bold">Defence</li>
-    </ul>
-
-  <%= render "/shared/statscard" %>
+<div class="container mx-auto px-4 py-4">
+  <%= render "shared/nav" %>
+  <% @competitions.each do |competition| %>
+    <div class="competition">
+      <%= link_to competition, competition_path(competition)%>
+      <p>Sport: <%= competition.sport %></p>
+      <p>Start Date: <%= competition.start_date %></p>
+      <p>End Date: <%= competition.end_date %></p>
+      <%= link_to "Edit", edit_admin_competition_path(competition) %>
+    </div>
+  <% end %>
 
 </div>
 <% if @competitions.exists? %>

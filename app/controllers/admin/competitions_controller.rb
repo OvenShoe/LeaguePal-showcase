@@ -3,12 +3,17 @@ class Admin::CompetitionsController < ApplicationController
 
   def index
     @competitions = Competition.all
+    @user = User.all
   end
 
   def show
     @teams = @competition.teams
     @available_captains = User.order(:first_name, :last_name, :email)
+    @user = User.find(params[:id])
+    @user_email = current_user.email
   end
+
+
 
   def new
     @competition = Competition.new(sport: "unassigned")
