@@ -2,13 +2,6 @@
 <html>
   <head>
     <title><%= content_for(:title) || "League Pal" %></title>
-    <style>
-      @keyframes bounce-once {
-         0%, 100% { transform: translateY(0) rotate(0deg); }
-         30% { transform: translateY(-10px) rotate(-5deg); }
-        60% { transform: translateY(-5px) rotate(-8deg); }
-}
-    </style>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="League Pal">
@@ -33,7 +26,6 @@
   <body>
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
-      <%= render "/shared/nav" %>
       <%= render "/shared/header" %>
     <%= yield %>
 
