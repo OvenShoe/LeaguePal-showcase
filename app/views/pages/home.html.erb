@@ -1,18 +1,27 @@
-<div class="bg-gray-200 rounderd min-h-screen p-8 flex items-center justify-center p-8 w-50%">
-  <div>
+<div class="flex flex-col items-start justify-start font-barlow p-4 font-semibold">
+  <h1 class="text-2xl mb-2">Welcome, <%= current_user.first_name %>!</h1>
+  <%= link_to "View all competitions", competitions_path, class: "block hover:underline" %>
+  <%= link_to "Create a new competition", competitions_path, class: "block hover:underline" %>
+
+</div>
+
+<div class="flex items-start justify-start font-barlow" >
+</div>
+
+<div class="flex items-start justify-start font-barlow" >
+  <p class="hover:underline"><%= link_to "Create a new competition", new_admin_competition_path if current_user&.is_admin? %></p>
+</div>
+
+<div class="flex items-start justify-start p-4 font-barlow">
+
+  <div class>
     <% if user_signed_in? %>
       <div>
-        <p>Signed in as <%= current_user.first_name%> email: <%= current_user.email%></p>
+        <p class="text-large">Signed in as <%= current_user.first_name%> email: <%= current_user.email%></p>
       </div>
-      <div class="bg-red-50">
-        <% if current_user&.is_admin? %>
-          <h1>Welcome Admin!</h1>
 
-          <%= link_to "Admin competitions", admin_competitions_path %>
-        <% end %>
-      </div>
-      <div class="bg-green-80">
-        <h1>Welcome to League Pal!</h1>
+
+      <div>
         <%= link_to "All competitions", competitions_path %>
 
         <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
@@ -42,15 +51,3 @@
     <%= link_to "Log In", new_user_session_path %>
   </p>
 <% end %>
-
-<h2> NATHANS OLD VIEW </h2>
-<% if current_user&.is_admin? %>
-  <h1>Welcome Admin!</h1>
-  <%= link_to "Admin competitions", admin_competitions_path %>
-<% else %>
-  <h1>Welcome to League Pal!</h1>
-<% end %>
-
-<%= link_to "All competitions", competitions_path %>
-
-<%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
