@@ -51,3 +51,22 @@
     <%= link_to "Log In", new_user_session_path %>
   </p>
 <% end %>
+
+<h2> NATHANS OLD VIEW </h2>
+<% if current_user&.is_admin? %>
+  <h1>Welcome Admin!</h1>
+  <%= link_to "Admin competitions", admin_competitions_path %>
+<% else %>
+  <h1>Welcome to LeaguePal!</h1>
+<% end %>
+
+<%= link_to "All competitions", competitions_path %>
+
+<%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
+
+<% if user_signed_in? && current_user.has_games? %>
+  <div>
+    <%= link_to "View Game", game_path(current_user.next_game.id) %>
+    <%= render "shared/matchcard", game: current_user.next_game %>
+  </div>
+<% end %>
