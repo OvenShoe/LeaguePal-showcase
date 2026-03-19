@@ -54,3 +54,10 @@
 <%= link_to "All competitions", competitions_path %>
 
 <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
+
+<% if user_signed_in? && current_user.has_games? %>
+  <div>
+    <%= link_to "View Game", game_path(current_user.next_game.id) %>
+    <%= render "shared/matchcard", game: current_user.next_game %>
+  </div>
+<% end %>
