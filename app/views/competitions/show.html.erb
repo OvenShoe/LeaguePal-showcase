@@ -20,25 +20,15 @@
 
 
   <h1 class="font-bold text-4xl mb-4"><%= @competition.name %></h1>
-
+  <%= render "shared/nav" %>
   <div class="mb-6">
-    <p><strong>Sport:</strong> <%= @competition.sport %></p>
-    <p><strong>Start Date:</strong> <%= @competition.start_date %></p>
-    <p><strong>End Date:</strong> <%= @competition.end_date %></p>
-  </div>
+    <h2 class="text-2xl mb-4">Next Match</h2>
+    <%= render "shared/matchcard" %>
+    <h2 class="text-2xl mt-4">Competition Standings</h2>
+    <%= render "shared/standingstable" %>
+    <h2 class="text-2xl mt-4">Competition Statistics</h2>
+    <%= render "shared/statscard" %>
 
-  <div class="mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Teams</h2>
-    <% if @competition.teams.any? %>
-      <ul class="list-disc pl-6">
-        <% @competition.teams.each do |team| %>
-          <li><%= team.name %></li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="text-gray-600">No teams registered yet.</p>
-    <% end %>
-  </div>
 
   <% if current_user&.is_admin? %>
     <div class="mb-8">
@@ -46,6 +36,7 @@
       <%= link_to "Manage Competition Invites", admin_competition_path(@competition), class: "text-blue-600 hover:underline" %>
     </div>
   <% end %>
-
-  <%= link_to "Back to Competitions", competitions_path, class: 'text-blue-600 hover:underline' %>
+  <div class="">
+  <%= link_to "Back to Competitions", competitions_path, class: 'mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded' %>
+  </div>
 </div>

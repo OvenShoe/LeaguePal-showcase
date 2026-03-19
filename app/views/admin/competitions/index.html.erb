@@ -1,13 +1,22 @@
-<% @competitions.each do |competition| %>
-  <div class="competition">
-    <%= link_to "Competition info", admin_competition_path(competition)%>
-    <h3><%= competition.name %></h3>
-    <p>Sport: <%= competition.sport %></p>
-    <p>Start Date: <%= competition.start_date %></p>
-    <p>End Date: <%= competition.end_date %></p>
-    <%= link_to "Edit", edit_admin_competition_path(competition) %>
-  </div>
-<% end %>   
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold">Welcome Back!</h1>
 
-<%= link_to "New Competition", new_admin_competition_path %>
-<%= link_to "Home", root_path %>
+    <% @competitions.each do |competition| %>
+    <div class="competition">
+      <%= link_to "Competition name", admin_competition_path(competition)%>
+      <h3><%= competition.name %></h3>
+      <p>Sport: <%= competition.sport %></p>
+      <p>Start Date: <%= competition.start_date %></p>
+      <p>End Date: <%= competition.end_date %></p>
+      <%= link_to "Edit", edit_admin_competition_path(competition) %>
+    </div>
+  <% end %>
+
+  <%= link_to "New Competition", new_admin_competition_path %>
+  <%= link_to "Home", root_path %>
+</div>
+
+<% @competitions.each do |competition| %>
+  <% end %>
+
+  <%= render "/shared/admin_comp_card" %>
