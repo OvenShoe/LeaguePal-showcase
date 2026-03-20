@@ -25,3 +25,35 @@
         data: { turbo_method: :delete },
         class: "mb-4 flex w-full justify-center rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50" %>
 </div>
+
+<% if user_signed_in? %>
+  <p>Signed in as <%= current_user.email %></p>
+  <p>
+    <%= link_to "Edit Profile", edit_user_registration_path %> |
+    <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
+  </p>
+<% else %>
+  <p>
+    <%= link_to "Sign Up", new_user_registration_path %> |
+    <%= link_to "Log In", new_user_session_path %>
+  </p>
+<% end %>
+
+<h2> NATHANS OLD VIEW </h2>
+<% if current_user&.is_admin? %>
+  <h1>Welcome Admin!</h1>
+  <%= link_to "Admin competitions", admin_competitions_path %>
+<% else %>
+  <h1>Welcome to LeaguePal!</h1>
+<% end %>
+
+<%= link_to "All competitions", competitions_path %>
+
+<%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
+
+<% if user_signed_in? && current_user.has_games? %>
+  <div>
+    <%= link_to "View Game", game_path(current_user.next_game.id) %>
+    <%= render "shared/matchcard", game: current_user.next_game %>
+  </div>
+<% end %>
