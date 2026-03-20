@@ -1,35 +1,51 @@
-<h2>Sign Up</h2>
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="mx-auto w-full max-w-sm">
+    <h2 class="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">Create your account</h2>
+  </div>
 
-  <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-    <%= f.error_notification %>
+  <div class="mt-10 mx-auto w-full max-w-sm">
+    <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { novalidate: true }) do |f| %>
+      <%= f.error_notification class: "text-red-500 text-sm mb-4 text-center" %>
 
-    <div class="form-inputs">
-      <%= f.input :email,
-                  required: true,
-                  autofocus: true,
-                  input_html: { autocomplete: "email",class:"!mx-10"}%>
+      <div class="space-y-6">
+        <%= f.input :email,
+            required: true,
+            autofocus: true,
+            label_html: { class: "block text-sm font-medium text-gray-900" },
+            input_html: { autocomplete: "email", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+            wrapper_html: { class: "space-y-1" } %>
 
-      <%= f.input :first_name,
-                  required: true,
-                  autofocus: true,
-                  input_html: { autocomplete: "first-name" }%>
-      <%= f.input :last_name,
-                  required: true,
-                  autofocus: true,
-                  input_html: { autocomplete: "last-name" }%>
-      <%= f.input :password,
-                  required: true,
-                  input_html: { autocomplete: "new-password" } %>
-      <%= f.input :password_confirmation,
-                  required: true,
-                  input_html: { autocomplete: "new-password" } %>
-    </div>
+        <%= f.input :first_name,
+            required: true,
+            label_html: { class: "block text-sm font-medium text-gray-900" },
+            input_html: { autocomplete: "given-name", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+            wrapper_html: { class: "space-y-1" } %>
 
+        <%= f.input :last_name,
+            required: true,
+            label_html: { class: "block text-sm font-medium text-gray-900" },
+            input_html: { autocomplete: "family-name", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+            wrapper_html: { class: "space-y-1" } %>
 
-    <div class="form-actions">
-      <%= f.button :submit, "Sign up" %>
-    </div>
+        <%= f.input :password,
+            required: true,
+            label_html: { class: "block text-sm font-medium text-gray-900" },
+            input_html: { autocomplete: "new-password", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+            wrapper_html: { class: "space-y-1" } %>
 
-<% end %>
+        <%= f.input :password_confirmation,
+            required: true,
+            label_html: { class: "block text-sm font-medium text-gray-900" },
+            input_html: { autocomplete: "new-password", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+            wrapper_html: { class: "space-y-1" } %>
 
-<%= render "devise/shared/links" %>
+        <%= f.button :submit, "Sign up", class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer" %>
+      </div>
+    <% end %>
+
+    <p class="mt-10 text-center text-sm text-gray-500">
+      Already a member?
+      <%= link_to "Sign in", new_user_session_path, class: "font-semibold text-indigo-600 hover:text-indigo-500" %>
+    </p>
+  </div>
+</div>
