@@ -1,7 +1,14 @@
-<div class="container">
-    <h1>New Competition</h1>
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="mx-auto w-full max-w-2xl">
+    <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
+      New Competition
+    </h1>
+  </div>
 
+  <div class="mt-10 mx-auto w-full max-w-2xl">
     <%= render "form" %>
-
-    <%= link_to "Back", admin_competitions_path %>
+    <div class="mt-4 text-center">
+      <%= link_to "Back", admin_competitions_path, class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+    </div>
+  </div>
 </div>

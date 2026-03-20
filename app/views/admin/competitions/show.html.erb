@@ -1,99 +1,159 @@
-<p>views/admin/competitions/show</p>
-<h2><%= @competition.name %></h2>
-<p>Sport: <%= @competition.sport %></p>
-<p>Start Date: <%= @competition.start_date %></p>
-<p>End Date: <%= @competition.end_date %></p>
-<%= link_to "Edit Competition", edit_admin_competition_path(@competition) %>
+<div class="flex min-h-full flex-col px-6 py-12 lg:px-8">
+  <div class="mx-auto w-full max-w-2xl">
 
-<h2 class="mt-4">Teams</h2>
-<ul>
-  <% @competition.teams.each do |team| %>
-    <li><%= team.name %></li>
-  <% end %>
-</ul>
-
-<% if @teams.count > 1 %>
-  <p>Number of teams: <%= @teams.count %></p>
-<%end%>
-<% if @competition.scaffold_generated? %>
-  <p>League scaffold has been generated for this competition.</p>
-<% else %>
-  <%= link_to "Back to Competitions", admin_competitions_path %>
-  <%# Submitted actions to Admin::CompetitionsController#send_invite %>
-  <%= simple_form_for :team_invite, url: send_invite_admin_competition_path(@competition), local: true, method: :post do |f| %>
-  <div class="form-inputs">
-      <%= f.input :name, label: "Team Name" %>
-      <%= f.input :invitee_email, label: "Email of invitee" %>
-      <%= f.input :role, as: :radio_buttons, collection: [["Captain", "captain"], ["Player", "player"]], label: "Role", checked: "captain", required: true %>
+<%# Competition Header %>
+<div class="mt-4 mb-6">
+  <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-barlow"><%= @competition.name %></h1>
+  <div class="mt-3">
+    <%= link_to "Edit Competition", edit_admin_competition_path(@competition),
+        class: "rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
   </div>
-    <div class="form-actions">
-      <%= f.button :submit, "Send Team Invite" %>
-    </div>
-  <% end %>
+</div>
 
-  <%= simple_form_for :team, url: create_team_admin_competition_path(@competition), local: true, method: :post do |f| %>
-    <div class="form-inputs">
-      <%= f.input :name, label: "Team Name" %>
-      <%= f.input :captain_id,
-        label: "Captain",
-        collection: @available_captains.map { |user| [user.list_name, user.id] },
-        prompt: "Select a captain" %>
-    </div>
-    <div class="form-actions">
-      <%= f.button :submit, "Create Team" %>
-    </div>
-  <% end %>
-<% end %>
-
-<% if @teams.count >= 2 && !@competition.scaffold_generated? %>
-  <%= simple_form_for @competition, url: generate_league_admin_competition_path(@competition), local: true, method: :post do |f| %>
-    <div class="form-inputs">
-      <%= label_tag :ties, "Times each team plays every other team" %>
-      <%= number_field_tag :ties, 1, min: 1 %>
-    </div>
-    
-    <div class="mb-3">
-      <label class="form-label">Locations</label>
-      <% @competition.teams.count.times do  %>
-          <%= f.input_field :locations, name: "competition[locations][]", value: @competition.locations[0], placeholder: "Location 1", class: "form-control mb-2" %>
-      <% end %>        
-    </div>
-    
-    <div class="form-actions">
-      <%= f.button :submit, "Generate league scaffold" %>
-    </div>
-  <% end %>
-<% end %>
-
-<% if @competition.scaffold_generated? %>
-  <% round_count = 1 %>
-  <%# Iterate over each round %>
-  <% @competition.rounds.order(:id).each do |round| %>
-    <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-red shadow-sm m-6">
-      <div class="px-4 py-5 sm:px-6">
-        <h2> Round: <%= round_count %></h2>
-        <% if round.name.present? %>
-          <h2><%= round.name %></h2>
+    <%# Teams %>
+    <div class="mb-6">
+      <h2 class="text-lg font-bold text-gray-900 font-barlow mb-2">Teams</h2>
+      <% if @competition.teams.any? %>
+        <ul class="space-y-1">
+          <% @competition.teams.each do |team| %>
+            <li class="text-sm text-gray-700 border border-gray-200 rounded-md px-3 py-2"><%= team.name %></li>
+          <% end %>
+        </ul>
+        <% if @teams.count > 1 %>
+          <p class="mt-2 text-sm text-gray-500">Total teams: <%= @teams.count %></p>
         <% end %>
-        <%= link_to "Edit rounds and teams", admin_round_path(round.id) %>
+      <% else %>
+        <p class="text-sm text-gray-500">No teams yet.</p>
+      <% end %>
+    </div>
+
+    <% if @competition.scaffold_generated? %>
+      <div class="rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 mb-6">
+        League scaffold has been generated for this competition.
       </div>
-      <div class="px-4 py-5 sm:p-6">
-        <%# Iterate over every game %>
-        <% round.games.each do |game| %>
-          <%# CONTENT DIV %>
-          <div class="p-4">
-            <p>Game Id: <%= game.id%> </p>
+    <% else %>
+
+      <%= link_to "Back to Competitions", admin_competitions_path,
+          class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500 mb-6 block" %>
+
+      <hr class="my-6 border-gray-200">
+
+      <%# Send Team Invite %>
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4">Send Team Invite</h2>
+        <%= simple_form_for :team_invite, url: send_invite_admin_competition_path(@competition), local: true, method: :post, html: { novalidate: true } do |f| %>
+          <div class="space-y-4">
+            <%= f.input :name,
+                label: "Team Name",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :invitee_email,
+                label: "Email of invitee",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :role,
+                as: :radio_buttons,
+                collection: [["Captain", "captain"], ["Player", "player"]],
+                label: "Role",
+                required: true,
+                item_wrapper_class: "flex items-center gap-2",
+                item_label_class: "text-sm text-gray-700",
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.button :submit, "Send Team Invite",
+                class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
           </div>
-          <div class="flex">
-            <p>Team 1: <%= game.team_1&.name || "TBD" %></p>
-            <p>Team 2: <%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></p>
-          </div>
-        <%= link_to "View game and add stats", game_path(game) %> 
         <% end %>
       </div>
-    </div>
-    <% round_count += 1 %>
-  <% end %>
-<% end %>
 
-<%# Create Hidden round create via checkbox %>
+      <hr class="my-6 border-gray-200">
+
+      <%# Create Team %>
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4">Create Team</h2>
+        <%= simple_form_for :team, url: create_team_admin_competition_path(@competition), local: true, method: :post, html: { novalidate: true } do |f| %>
+          <div class="space-y-4">
+            <%= f.input :name,
+                label: "Team Name",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :captain_id,
+                label: "Captain",
+                collection: @available_captains.map { |user| [user.list_name, user.id] },
+                prompt: "Select a captain",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.button :submit, "Create Team",
+                class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
+          </div>
+        <% end %>
+      </div>
+
+    <% end %>
+
+    <%# Generate League Scaffold %>
+    <% if @teams.count >= 2 && !@competition.scaffold_generated? %>
+      <hr class="my-6 border-gray-200">
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4">Generate League</h2>
+        <%= simple_form_for @competition, url: generate_league_admin_competition_path(@competition), local: true, method: :post, html: { novalidate: true } do |f| %>
+          <div class="space-y-4">
+            <div class="space-y-1">
+              <%= label_tag :ties, "Times each team plays every other team", class: "block text-sm font-medium text-gray-900" %>
+              <%= number_field_tag :ties, 1, min: 1, class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" %>
+            </div>
+
+            <div class="space-y-2">
+              <p class="block text-sm font-medium text-gray-900">Locations</p>
+              <% @competition.teams.count.times do %>
+                <%= f.input_field :locations, name: "competition[locations][]", value: @competition.locations[0], placeholder: "Location", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm mb-2" %>
+              <% end %>
+            </div>
+
+            <%= f.button :submit, "Generate League Scaffold",
+                class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Rounds %>
+    <% if @competition.scaffold_generated? %>
+      <hr class="my-6 border-gray-200">
+      <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4">Rounds</h2>
+      <% round_count = 1 %>
+      <% @competition.rounds.order(:id).each do |round| %>
+        <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+          <div class="flex items-center justify-between bg-gray-50 px-4 py-3 border-b border-gray-200">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900">Round <%= round_count %></h3>
+              <% if round.name.present? %>
+                <p class="text-sm text-gray-500"><%= round.name %></p>
+              <% end %>
+            </div>
+            <%= link_to "Edit round", admin_round_path(round.id),
+                class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+          </div>
+          <div class="divide-y divide-gray-100">
+            <% round.games.each do |game| %>
+              <div class="flex items-center justify-between px-4 py-3">
+                <div class="text-sm text-gray-700">
+                  <span class="font-medium"><%= game.team_1&.name || "TBD" %></span>
+                  <span class="mx-2 text-gray-400">vs</span>
+                  <span class="font-medium"><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></span>
+                </div>
+                <%= link_to "View game", game_path(game),
+                    class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <% round_count += 1 %>
+      <% end %>
+    <% end %>
+
+  </div>
+</div>
