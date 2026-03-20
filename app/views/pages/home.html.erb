@@ -18,6 +18,9 @@
     <%= link_to "Edit Profile", edit_user_registration_path,
         class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
 
+    <%= link_to "Manage Competitions", admin_competitions_path,
+    class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+
     <%= link_to "Log Out", destroy_user_session_path,
         data: { turbo_method: :delete },
         class: "mb-4 flex w-full justify-center rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50" %>
