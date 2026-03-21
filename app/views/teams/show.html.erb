@@ -31,6 +31,78 @@
   <% end %>
 <% end %>
 
+<%# Player avatar %>
+<% if user_signed_in? %>
+  <% current_member = @team.team_members.find_by(user: current_user) %>
+    <% if current_member %>
+
+      <h3>Your Avatar for <%= @team.name %></h3>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+        <% TeamAvatar.where(user: current_user, team: @team).order(created_at: :desc).limit(8).each do |ta| %>
+          <% selected = current_user.avatar.attached? && current_user.avatar.blob_id == ta.blob_id%>
+
+          <div style="text-align:center">
+            <%= button_to set_avatar_path(ta.blob_id), method: :post, style: "border:none; background:none; padding:0;" do %>
+              <%= image_tag rails_blob_path(ta.blob, disposition: "inline"), width: 120, height: 120, style: "border-radius:50%; object-fit:cover; cursor:pointer; border:5px solid #{selected ? '#4CAF50' : '#ddd'};" %>
+            <% end %>
+
+            <small><%= selected ? "Current Avatar" : "Click to use" %></small>
+
+            <%= button_to delete_ai_avatar_path(ta.blob_id), method: :delete,
+                data: { turbo_confirm: "Delete this avatar?" },
+                style: "display:block; margin-top:4px; background:#e53e3e; color:white; border:none; border-radius:4px; padding:3px 10px; cursor:pointer; font-size:12px;" do  %>
+              🗑 Delete
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+    <% if !current_user.avatar.attached? %>
+      <p>
+        <small style="color:#999"> Upload a profile photo in <%= link_to "account settings", edit_user_registration_path %> to generate an avatar. </small>
+      </p>
+    <% elsif !@team.jersey.attached? %>
+      <p>
+        <small style="color:#999"> Waiting for the captain to upload a team jersey.</small>
+      </p>
+    <% else %>
+      <%= button_to "Generate My #{@team.name} Avatar",
+          generate_ai_avatar_users_path,
+          method: :post,
+          params: { team_id: @team.id },
+          data: { turbo_submits_with: "Generating your #{@team.name} Avatar, please wait... this takes ~20 seconds" } %>
+    <% end %>
+
+    <hr>
+
+    <%# Logo and Jersey display %>
+    <% if @team.logo.attached? || @team.jersey.attached? %>
+      <h3><%= @team.name %> Kit </h3>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        <% if @team.logo.attached? %>
+          <div style="text-align:center">
+            <%= image_tag @team.logo, width: 120, style: "border-radius:8px;" %>
+            <p><small>Team logo</small></p>
+          </div>
+        <% end %>
+        <% if @team.jersey.attached? %>
+          <div style="text-align:center">
+            <%= image_tag @team.jersey, width: 120, style: "border-radius:8px;" %>
+            <p><small>Team jersey</small></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Captain-only edit %>
+
+    <% if current_user&.is_captain_of?(@team) %>
+      <%= link_to "Manage Team Logo and Jersey ->", edit_team_path(@team) %>
+    <% end %>
+  <% end %>
+<% end %>
+
 <% if @invitation_token.present? && @invitation.present? %>
   <div data-controller="team-popup"
        data-team-popup-token-value="<%= @invitation_token %>"

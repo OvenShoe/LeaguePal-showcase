@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!, except: %i[ edit show ]
-  before_action :set_team, only: %i[ edit update show add_member send_invite ]
+  before_action :set_team, only: %i[ edit update show add_member send_invite upload_jersey upload_logo generate_logo generate_jersey]
   before_action :authenticate_or_allow_with_token!, only: [ :show ]
 
   def index
@@ -39,12 +39,12 @@ class TeamsController < ApplicationController
 
     if @team_member.save
 
-      redirect_to @team, notice: "User added to team"
+      redirect_to @team, notice: "User added to team."
     else
-      redirect_to @team, alert: "Error adding user to team"
+      redirect_to @team, alert: "Error adding user to team."
     end
   rescue ActiveRecord::RecordInvalid
-    redirect_to @team, alert: "Error adding user to team"
+    redirect_to @team, alert: "Error adding user to team."
   end
 
   def send_invite
@@ -60,7 +60,51 @@ class TeamsController < ApplicationController
     redirect_to @team, notice: "Team invitation sent successfully!"
   rescue StandardError => e
     invitation&.destroy if defined?(invitation) && invitation&.persisted?
-    redirect_to @team, alert: "Failed to send invitation: #{e.message}"
+    redirect_to @team, alert: "Failed to send invitation: #{e.message}."
+  end
+
+  def upload_logo
+    return unless require_captain!
+    if @team.update(logo: params[:logo])
+      redirect_to edit_team_path(@team), notice: "Logo uploaded successfully!"
+    else
+      redirect_to edit_team_path(@team), alert: "Failed to upload logo: #{@team.errors.full_messages.join(', ')}"
+    end
+  rescue StandardError => e
+      redirect_to edit_team_path(@team), alert: "Failed to upload logo: #{e.message}"
+  end
+
+  def generate_logo
+    return unless require_captain!
+    AiLogoGenerator.new(@team, params[:logo_description]).generate!
+    redirect_to edit_team_path(@team), notice: "Team Logo generated!"
+  rescue StandardError => e
+    Rails.logger.error "Logo generation failed: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    redirect_to edit_team_path(@team), alert: "Failed to generate logo: #{e.message}"
+  end
+
+  def upload_jersey
+    return unless require_captain!
+    if @team.update(jersey: params[:jersey])
+      redirect_to edit_team_path(@team), notice: "Team Jersey uploaded successfully!"
+    else
+      redirect_to edit_team_path(@team), alert: "Failed to upload jersey: #{@team.errors.full_messages.join(', ')}"
+    end
+  rescue StandardError => e
+    redirect_to edit_team_path(@team), alert: "Failed to upload jersey: #{e.message}"
+  end
+
+  def generate_jersey
+    return unless require_captain!
+    unless @team.logo.attached?
+      redirect_to edit_team_path(@team), alert: "Upload or generate a team logo first" and return
+    end
+    AiJerseyGenerator.new(@team, params[:jersey_description]).generate!
+    redirect_to edit_team_path(@team), notice: "Team Jersey generated!"
+  rescue StandardError => e
+    Rails.logger.error "Jersey generation failed: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+    redirect_to edit_team_path(@team), alert: "Failed to generate jersey: #{e.message}"
   end
 
   def update
@@ -72,7 +116,7 @@ class TeamsController < ApplicationController
         invitation&.accept!(current_user)
         redirect_to @team, notice: "Team updated and invitation accepted!"
       else
-        redirect_to @team, notice: "Team updated successfully"
+        redirect_to @team, notice: "Team updated successfully."
       end
     else
       render :edit, status: :unprocessable_entity
@@ -113,6 +157,14 @@ class TeamsController < ApplicationController
     end
   end
 
+  def require_captain!
+    current_team_member = @team.team_members.find_by(user: current_user)
+    unless current_team_member&.captain?
+      redirect_to edit_team_path(@team), alert: "Only the team captain can access this" and return false
+    end
+    true
+  end
+
   def team_member_params
     params.require(:team_member).permit(:user_id)
   end
@@ -126,6 +178,6 @@ class TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:name, :user_id, :jersey)
+    params.require(:team).permit(:name, :user_id, :jersey, :logo)
   end
 end

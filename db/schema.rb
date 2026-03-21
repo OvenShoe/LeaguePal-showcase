@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,6 +89,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
     t.index ["user_id"], name: "index_stats_on_user_id"
   end
 
+  create_table "team_avatars", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "team_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["team_id"], name: "index_team_avatars_on_team_id"
+    t.index ["user_id", "team_id"], name: "index_team_avatars_on_user_id_and_team_id"
+    t.index ["user_id"], name: "index_team_avatars_on_user_id"
+  end
+
   create_table "team_invitations", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -98,13 +109,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "team_id", null: false
-    t.string "token"
+    t.string "token", default: "", null: false
     t.string "token_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
     t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
     t.index ["role"], name: "index_team_invitations_on_role"
     t.index ["team_id"], name: "index_team_invitations_on_team_id"
+    t.index ["token"], name: "index_team_invitations_on_token", unique: true
     t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
   end
 
@@ -169,6 +181,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_085438) do
   add_foreign_key "rounds", "competitions"
   add_foreign_key "stats", "games"
   add_foreign_key "stats", "users"
+  add_foreign_key "team_avatars", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "team_avatars", "teams"
+  add_foreign_key "team_avatars", "users"
   add_foreign_key "team_invitations", "teams"
   add_foreign_key "team_invitations", "users", column: "inviter_id"
   add_foreign_key "team_members", "teams"

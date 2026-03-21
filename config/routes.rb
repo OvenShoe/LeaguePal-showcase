@@ -7,8 +7,12 @@ Rails.application.routes.draw do
   resources :users, only: %i[index show edit update], constraints: { id: /\d+/ }
   resources :competitions, only: %i[index new create show edit update]
   resources :teams, only: %i[show edit index update] do
-     post :add_member, on: :member
-     post :send_invite, on: :member
+    post :add_member, on: :member
+    post :send_invite, on: :member
+    patch :upload_jersey, on: :member
+    patch :upload_logo, on: :member
+    post :generate_logo, on: :member
+    post :generate_jersey, on: :member
   end
   resources :trophies, only: %i[index new create]
 
@@ -26,15 +30,13 @@ Rails.application.routes.draw do
   get "users/:id/next_match", to: "users#next_match", constraints: { id: /\d+/ }
   get "teams/:id/stats", to: "teams#stats", constraints: { id: /\d+/ }
 
+  # Avatar routes
   # Jersey upload CHECK IF THIS USES ACTIVE RECORD
-  patch "teams/:id/upload_jersey", to: "teams#upload_jersey", constraints: { id: /\d+/ }
-  post "users/generate_ai_avatar", to: "users#generate_ai_avatar", as: :generate_ai_avatar_users
-  post "users/set_avatar/:id", to: "users#set_avatar", as: :set_avatar
-  delete 'avatars/:id', to: 'avatars#destroy', as: 'delete_ai_avatar'
+  post   "users/avatars/generate",  to: "users/avatars#generate",  as: :generate_ai_avatar_users
+  post   "users/avatars/:id/set",   to: "users/avatars#set",       as: :set_avatar
+  delete "users/avatars/:id",       to: "users/avatars#destroy",   as: :delete_ai_avatar
 
   # ------------------------------------------------------------------------------------------
-  get "users/:id/next_match", to: "users#next_match"
-  get "teams/:id/stats", to: "teams#stats"
   get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation
   post "/team_invitations/accept", to: "team_invitations#accept", as: "team_invitation_accept"
   post "/team_invitations/reject", to: "team_invitations#reject", as: "team_invitation_reject"
