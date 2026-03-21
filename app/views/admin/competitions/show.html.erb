@@ -5,7 +5,9 @@
 <div class="mt-4 mb-6">
   <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-barlow"><%= @competition.name %></h1>
   <div class="mt-3">
-    <%= link_to "Edit Competition", edit_admin_competition_path(@competition),
+    <%= link_to "Edit competition", edit_admin_competition_path(@competition),
+        class: "rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+    <%= link_to "View all competitions", competitions_path,
         class: "rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
   </div>
 </div>
