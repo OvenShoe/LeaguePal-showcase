@@ -10,12 +10,18 @@
 <% date = local_assigns[:date] || @date || game&.start_time&.strftime("%b %-d, %Y") || "TBD" %>
 
 <% bye_game = game&.respond_to?(:bye?) ? game.bye? : team_2.blank? %>
+<% complete = game&.respond_to?(:complete) ? game.complete : false %>
+<% winner = team_1_score > team_2_score ? :team_1 : (team_2_score > team_1_score ? :team_2 : nil) %>
 
 <div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>
-      <p class="text-sm font-bold text-green-600"><%= start_time %></p>
+      <% if complete %>
+        <p class="text-sm font-bold text-red-600">Game Finished</p>
+      <% else %>
+        <p class="text-sm font-bold text-green-600"><%= start_time %></p>
+      <% end %>
       <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= date %></p>
     </div>
 
@@ -24,7 +30,7 @@
       <div>
         <%# Team_1 Score Here %>
         <div id="team_1_score">
-          <h2><%= team_1_score %></h2>
+          <h2 class="<%= winner == :team_1 && complete ? 'text-green-600' : '' %>"><%= team_1_score %></h2>
         </div>
       </div>
 
@@ -54,7 +60,7 @@
       <div>
         <%# Team_2 Score here %>
         <div id="team_2_score">
-          <h2><%= bye_game ? "-" : team_2_score %></h2>
+          <h2 class="<%= winner == :team_2 && complete ? 'text-green-600' : '' %>"><%= bye_game ? "-" : team_2_score %></h2>
         </div>
       </div>
     </div>

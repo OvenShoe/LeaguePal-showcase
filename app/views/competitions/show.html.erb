@@ -4,7 +4,7 @@
 
   <h2 class="font-bold text-2xl">Next Game</h1>
   <h2 class="font-bold text-2xl mb-6">Next Game</h1>
-  <%= render "/shared/matchcard", game: @next_game %>
+  <%# stats card %>
   <h2 class="font-bold text-2xl mt-6">Competition Standings</h1>
   <%= render "/shared/standingstable" %>
     <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>

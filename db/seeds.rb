@@ -38,7 +38,43 @@ puts "CompetitionAdmin created for user: #{temp_comp_admin.user.first_name} 💻
 competition = Competition.create!(competition_admin_id: temp_comp_admin.id, sport: "Netball")
 puts "Competition created: #{competition.name} 🥍"
 
+competition_2 = Competition.create!(name: "Test League", sport: "Football", competition_admin_id: temp_comp_admin.id)
+round = Round.create!(competition: competition_2, name: "Round 1")
+
 puts "Creating team and users for associations...🏗"
+
+user1 = User.create!(
+  first_name: "Alice",
+  last_name: "Smith",
+  email: "alice@example.com",
+   password: "password"
+)
+
+user2 = User.create!(
+  first_name: "Bob",
+  last_name: "Jones",
+  email: "bob@example.com",
+  password: "password"
+)
+team1 = Team.create!(name: "Red Rockets", competition_id: competition_2.id)
+team2 = Team.create!(name: "Blue Blasters", competition_id: competition_2.id)
+
+team1.team_members.create!(user_id: user1.id)
+team2.team_members.create!(user_id: user2.id)
+
+round = Round.create!(competition_id: competition_2.id, name: "Frog Round")
+game = Game.create!(round_id: round.id, team_1_id: team1.id, team_2_id: team2.id)
+Stat.create!(game: game, user: user1, label: "goals", value: 3)
+Stat.create!(game: game, user: user2, label: "goals", value: 2)
+Stat.create!(game: game, user: user1, label: "assists", value: 1)
+Stat.create!(game: game, user: user2, label: "assists", value: 2)
+Stat.create!(game: game, user: user1, label: "tackles", value: 5)
+Stat.create!(game: game, user: user2, label: "tackles", value: 7)
+Stat.create!(game: game, user: user1, label: "shots", value: 4)
+Stat.create!(game: game, user: user2, label: "shots", value: 4)
+
+
+
 team = Team.create!(
   name: "Gack Zalifiniakis",
   competition_id: competition.id,
@@ -70,7 +106,8 @@ TeamMember.create!(
 )
 puts "User created: #{captain.first_name} #{captain.last_name} (#{captain.email} 👩🏾‍🏭) and added as Captain to team #{team.name} 🏆"
 
-puts
+
+
 player = User.create!(
   first_name: "Zack",
   last_name: "Galifianakis",

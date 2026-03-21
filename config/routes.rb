@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :games do
+    patch :complete_game, on: :member
     resources :stats
   end
   resources :rounds

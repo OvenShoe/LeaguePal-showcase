@@ -1,5 +1,6 @@
 class Admin::CompetitionsController < ApplicationController
   before_action :set_competition, only: %i[ show edit update create_team send_invite generate_league add_game_dates ]
+  before_action :authenticate_user!
 
   def index
     @competitions = Competition.all
@@ -9,8 +10,6 @@ class Admin::CompetitionsController < ApplicationController
   def show
     @teams = @competition.teams
     @available_captains = User.order(:first_name, :last_name, :email)
-    @user = User.find(params[:id])
-    @user_email = current_user.email
   end
 
 
@@ -311,5 +310,15 @@ private
     end
   rescue ArgumentError
     raise ArgumentError, "Invalid start time format: #{time_str}"
+  end
+
+  def validate_user
+    # Only allow user admins to perform CRUD actions
+    if current_user.is_admin?
+      Rails.logger.debug("[Stats#validate_user] allowed user_id=#{current_user.id}")
+    else
+      Rails.logger.warn("[Stats#validate_user] blocked user_id=#{current_user&.id}")
+      redirect_to games_path, notice: "Current user is not admin"
+    end
   end
 end
