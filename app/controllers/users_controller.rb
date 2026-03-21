@@ -9,6 +9,10 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def avatar
+    @user = User.find(params[:id])
+  end
+
   def generate_ai_avatar
     generator = AiAvatarGenerator.new(current_user)
     generator.generate!

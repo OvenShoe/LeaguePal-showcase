@@ -1,57 +1,74 @@
-require "faraday"
-require "faraday/multipart"
-require "json"
+require "openai"
 require "base64"
+require "tempfile"
 require "stringio"
 
 class AiAvatarGenerator
-  MAX_AVATARS = 8  # limit to last 8 avatars
+  MAX_AVATARS = 8
 
-  def initialize(user)
+  def initialize(user, team)
     @user = user
+    @team = team
   end
 
   def generate!
     raise "User has no avatar uploaded" unless @user.avatar.attached?
+    raise "Team has no jersey uploaded" unless @team.jersey.attached?
 
     # fetch API key as string, fail early if missing
-    api_key = ENV.fetch("OPENAI_API_KEY") { raise "OPENAI_API_KEY not set" }.to_s
+    client = OpenAI::Client.new(api_key: ENV.fetch("OPENAI_API_KEY"))
 
-    conn = Faraday.new(url: "https://api.openai.com") do |f|
-      f.request :multipart
-      f.headers["Authorization"] = "Bearer #{api_key}"
+    avatar_tempfile = Tempfile.new(["avatar", ".png"])
+
+    begin
+      avatar_tempfile.binmode
+      avatar_tempfile.write(@user.avatar.download)
+      avatar_tempfile.rewind
+
+      response = client.images.edit(
+        model:            "gpt-image-1",
+        image:            avatar_tempfile,
+        prompt:           build_prompt,
+        size:             "1024x1024",
+      )
+    ensure
+      avatar_tempfile.close
+      avatar_tempfile.unlink
     end
 
-    response = conn.post("/v1/images/edits") do |req|
-      req.body = {
-        model: "gpt-image-1",
-        prompt: "Generate a sports-style avatar of this person wearing a jersey keeping the style as photo realistic as possible and facing the camera.",
-        image: Faraday::UploadIO.new(
-          StringIO.new(@user.avatar.download),
-          @user.avatar.content_type,
-          "avatar.png"
-        )
-      }
-    end
-
-    json = JSON.parse(response.body)
-    base64_image = json.dig("data", 0, "b64_json")
-    raise "No image returned from OpenAI: #{json}" if base64_image.nil?
+    base64_image = response.dig("data", 0, "b64_json")
+    raise "No image returned from OpenAI: #{response}" if base64_image.nil?
 
     decoded_image = Base64.decode64(base64_image)
+
+    TeamAvatar.enforce_limit!(@user, @team)
+
     @user.ai_avatars.attach(
       io: StringIO.new(decoded_image),
       filename: "ai_avatar_#{Time.now.to_i}.png", # unique filename
       content_type: "image/png"
     )
 
-    # keep only last 5 avatars
-    if @user.ai_avatars.count > MAX_AVATARS
-      @user.ai_avatars.order(created_at: :asc).first.purge
-    end
+    blob = @user.ai_avatars.last.blob
 
-    @user.save!
+    TeamAvatar.create!(
+      user: @user,
+      team: @team,
+      blob: blob
+    )
 
-    @user.ai_avatars.last
+    blob
+  end
+
+  private
+
+  def build_prompt
+    <<~PROMPT.squish
+      Create a photo-realistic sports portrait avatar of this exact person wearing the #{@team.name} team jersey shown in the reference image.
+      The jersey design, colours, badge, and logos must match exactly.
+      Frame the image as a centred headshot: face occupies the top 40% of the frame,
+      shoulders visible at the bottom, neutral background.
+      Square 1:1 aspect ratio. No text. No distortion of the person's face.
+    PROMPT
   end
 end

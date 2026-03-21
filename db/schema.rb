@@ -98,6 +98,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_005202) do
     t.index ["user_id"], name: "index_stats_on_user_id"
   end
 
+  create_table "team_avatars", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "team_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["team_id"], name: "index_team_avatars_on_team_id"
+    t.index ["user_id", "team_id"], name: "index_team_avatars_on_user_id_and_team_id"
+    t.index ["user_id"], name: "index_team_avatars_on_user_id"
+  end
+
   create_table "team_invitations", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -180,6 +191,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_005202) do
   add_foreign_key "rounds", "competitions"
   add_foreign_key "stats", "games"
   add_foreign_key "stats", "users"
+  add_foreign_key "team_avatars", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "team_avatars", "teams"
+  add_foreign_key "team_avatars", "users"
   add_foreign_key "team_invitations", "teams"
   add_foreign_key "team_invitations", "users", column: "inviter_id"
   add_foreign_key "team_members", "teams"
