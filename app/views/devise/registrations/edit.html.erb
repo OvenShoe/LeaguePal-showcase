@@ -1,79 +1,21 @@
 <h2>Edit <%= resource_name.to_s.humanize %></h2>
 
-<h3>Your AI Avatar Gallery</h3>
-
-<div class="flex gap-4 flex-wrap mb-5">
-  <% resource.ai_avatars.last(8).reverse_each do |avatar| %>
-
-    <% selected = resource.avatar.attached? && resource.avatar.blob_id == avatar.blob_id %>
-
-    <div class="text-center relative">
-
-      <%= button_to set_avatar_path(avatar.id),
-          method: :post,
-          class: "border-0 bg-none p-0" do %>
-        <%= image_tag avatar,
-            width: 120,
-            height: 120,
-            class: "rounded-full object-cover cursor-pointer #{selected ? 'border-4 border-green-500' : 'border-4 border-gray-300'}" %>
-      <% end %>
-
-      <% if selected %>
-        <small>Current Avatar</small>
-      <% else %>
-        <small>Click to use</small>
-      <% end %>
-
-      <%= button_to "Delete Round", admin_round_path(@round),
-          method: :delete,
-          data: { confirm: "Delete this avatar?", turbo_confirm: "Delete this avatar?" },
-          style: "
-            display:block;
-            margin-top:4px;
-            background:#e53e3e;
-            color:white;
-            border:none;
-            border-radius:4px;
-            padding:3px 10px;
-            cursor:pointer;
-            font-size:12px;
-          " do %>
-        🗑 Delete
-      <% end %>
-
-    </div>
-
-  <% end %>
-</div>
-
-<h3>Generate AI Avatar</h3>
-
-<% if resource.avatar.attached? %>
-  <%= button_to "Generate AI Avatar",
-      generate_ai_avatar_users_path,
-      method: :post %>
-<% else %>
-  <p>Upload an avatar first to generate an AI version.</p>
-<% end %>
-
-<hr>
-
 <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f| %>
   <%= f.error_notification %>
 
   <div class="form-inputs">
 
-    <%= f.input :email, required: true, autofocus: true %>
-
-    <%= f.input :avatar, as: :file, label: "Profile Photo" %>
-
-    <% if resource.avatar.attached? %>
-      <p>Current avatar:</p>
+    <% if resource.avatar.attached? && resource.avatar.blob.persisted? %>
+      <p>Current profile picture:</p>
       <%= image_tag resource.avatar,
           width: 120,
           height: 120,
-          style: "border-radius:50%; object-fit:cover;" %>
+          style: "border-radius:50%; object-fit:cover; width:120px; height:120px" %>
     <% end %>
+
+    <%= f.input :avatar, as: :file, label: "Profile Photo" %>
+
+    <%= f.input :email, required: true, autofocus: true %>
 
     <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
       <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
@@ -88,76 +30,12 @@
                 required: false,
                 input_html: { autocomplete: "new-password" } %>
 
-    <%= f.input :current_password,
-                hint: "we need your current password to confirm your changes",
-                required: true,
-                input_html: { autocomplete: "current-password" } %>
-
   </div>
 
   <div class="form-actions">
     <%= f.button :submit, "Update" %>
   </div>
 
-<% end %>
-
-<hr>
-
-<h3>Your Avatar Gallery</h3>
-
-<% if resource.teams.any? %>
-  <% resource.teams.each do |team| %>
-    <h4><%= team.name %></h4>
-
-    <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
-      <% TeamAvatar.where(user: resource, team:team)
-      .order(created_at: :desc)
-      .limit(8)
-      .each do |ta| %>
-
-      <% selected = resource.avatar.attached? && resource.avatar.blob_id == ta.blob_id %>
-
-        <div style="text-align:center">
-          <%= button_to set_avatar_path(ta.blob_id), method: :post,
-              style: "border:none; background:none; padding:0;" do %>
-            <%= image_tag rails_blob_path(ta.blob, disposition: "inline"),
-                width: 120, height: 120,
-                style: "border-radius:50%; object-fit:cover; cursor:pointer;
-                        border:5px solid #{selected ? '#4CAF50' : '#ddd'};" %>
-          <% end %>
-
-          <small><%= selected ? "Current Avatar" : "Click to use"%></small>
-
-          <%= button_to delete_ai_avatar_path(ta.blob_id),
-              method: :delete,
-              data: { turbo_confirm: "Delete this avatar?" },
-              style: "display:block; margin-top:4px; background:#e53e3e; color:white; border:none;
-                      border-radius:4px; padding:3px 10px; cursor:pointer; font-size:12px;" do %>
-            🗑 Delete
-          <% end %>
-        </div>
-
-      <% end %>
-    </div>
-
-<%# Generate avatar button logic %>
-<h4>Generate New Avatar</h4>
-  <% if !resource.avatar.attached?  %>
-    <small style="color:#999">Upload a profile photo above to generate avatars.</small>
-  <% elsif !team.jersey.attached? %>
-    <small style="color:#999">Waiting for <%= team.name %> captain to upload a jersey</small>
-  <% else %>
-    <%= button_to "Generate AI Avatar",
-        generate_ai_avatar_users_path,
-        method: :post,
-        params: { team_id: team.id },
-        data: { turbo_submits_with: "Generating AI avatar, please wait... This takes about ~20 seconds" }%>
-  <% end %>
-
-    <br><br>
-  <% end %>
-<% else %>
-  <p>You are not currently a member of any teams.</p>
 <% end %>
 
 <hr>
