@@ -20,6 +20,10 @@ class User < ApplicationRecord
   has_many :stats, dependent: :destroy
   has_many :trophies, through: :team_members
 
+  def admin?
+  CompetitionAdmin.exists?(user_id: id)
+  end
+
   def is_admin?
     competition_admins.exists?
   end
@@ -30,5 +34,39 @@ class User < ApplicationRecord
 
   def list_name
     "#{first_name} #{last_name}: #{email}".strip
+  end
+
+  def name
+     "#{first_name} #{last_name}"
+  end
+
+  def has_games?
+    games_relation.exists?
+  end
+
+  def upcoming_games
+    games_relation
+      .where("start_time >= ?", Time.current)
+      .order(:start_time)
+  end
+
+  def past_games
+    games_relation
+      .where("start_time < ?", Time.current)
+      .order(start_time: :desc)
+  end
+
+  def next_game
+    upcoming_games.first
+  end
+
+  private
+
+  def games_relation
+    team_ids = teams.select(:id)
+    return Game.none if team_ids.blank?
+
+    Game.where(team_1_id: team_ids)
+        .or(Game.where(team_2_id: team_ids))
   end
 end

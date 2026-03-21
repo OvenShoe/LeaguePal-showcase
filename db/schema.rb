@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_005202) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,16 +53,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
     t.bigint "competition_admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "end_date"
+    t.integer "game_days", default: [], null: false, array: true
+    t.string "locations", default: [], null: false, array: true
     t.string "name"
-    t.integer "sport", default: 0, null: false
+    t.boolean "scaffold_generated", default: false, null: false
+    t.integer "sport", null: false
     t.datetime "start_date"
+    t.string "start_times", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.index ["competition_admin_id"], name: "index_competitions_on_competition_admin_id"
   end
 
   create_table "games", force: :cascade do |t|
+    t.integer "bye", null: false
+    t.boolean "complete", default: false, null: false
     t.datetime "created_at", null: false
+    t.string "location"
     t.bigint "round_id", null: false
+    t.datetime "start_time"
     t.bigint "team_1_id"
     t.bigint "team_2_id"
     t.datetime "updated_at", null: false
@@ -74,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
   create_table "rounds", force: :cascade do |t|
     t.bigint "competition_id", null: false
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["competition_id"], name: "index_rounds_on_competition_id"
   end
@@ -132,17 +141,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
 
   create_table "teams", force: :cascade do |t|
     t.bigint "competition_id", null: false
-    t.integer "competition_points"
+    t.integer "competition_points", default: 0
     t.datetime "created_at", null: false
-    t.integer "draws"
+    t.integer "draws", default: 0
     t.string "form", default: [], array: true
-    t.integer "games_played"
-    t.integer "losses"
+    t.integer "games_played", default: 0
+    t.integer "losses", default: 0
     t.string "name"
-    t.integer "points_against"
-    t.integer "points_for"
+    t.integer "points_against", default: 0
+    t.integer "points_for", default: 0
     t.datetime "updated_at", null: false
-    t.integer "wins"
+    t.integer "wins", default: 0
     t.index ["competition_id"], name: "index_teams_on_competition_id"
   end
 
@@ -166,6 +175,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_11_125158) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.string "thumbnail"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

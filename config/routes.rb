@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :games do
+    patch :complete_game, on: :member
+    resources :stats
+  end
+  resources :rounds
   devise_for :users, controllers: { registrations: "users/registrations" }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -19,7 +24,10 @@ Rails.application.routes.draw do
   # Routes grouped for admin competitions, rounds, teams
   namespace :admin do
     resources :competitions do
+      post :create_team, on: :member
       post :send_invite, on: :member
+      post :generate_league, on: :member
+      post :populate_league, on: :member
       resources :rounds, shallow: true
       resources :teams, shallow: true
     end
@@ -32,9 +40,10 @@ Rails.application.routes.draw do
 
   # Avatar routes
   # Jersey upload CHECK IF THIS USES ACTIVE RECORD
-  post   "users/avatars/generate",  to: "users/avatars#generate",  as: :generate_ai_avatar_users
-  post   "users/avatars/:id/set",   to: "users/avatars#set",       as: :set_avatar
-  delete "users/avatars/:id",       to: "users/avatars#destroy",   as: :delete_ai_avatar
+  patch "teams/:id/upload_jersey", to: "teams#upload_jersey", constraints: { id: /\d+/ }
+  post "users/generate_ai_avatar", to: "users#generate_ai_avatar", as: :generate_ai_avatar_users
+  post "users/set_avatar/:id", to: "users#set_avatar", as: :set_avatar
+  delete "avatars/:id", to: "avatars#destroy", as: "delete_ai_avatar"
 
   # ------------------------------------------------------------------------------------------
   get "invitations/accept", to: "invitations#accept", as: :accept_team_invitation

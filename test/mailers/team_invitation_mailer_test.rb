@@ -4,7 +4,7 @@ class TeamInvitationMailerTest < ActionMailer::TestCase
   test "invite_email" do
     user = User.create!(email: "inviter@test.com", password: "password")
     admin = CompetitionAdmin.create!(user_id: user.id)
-    competition = Competition.create!(name: "Test Competition", sport: "Basketball", start_date: Date.today, end_date: 1.month.from_now, competition_admin_id: admin.id)
+    competition = Competition.create!(name: "Test Competition", sport: "Netball", start_date: Date.today, end_date: 1.month.from_now, competition_admin_id: admin.id)
     team = Team.create!(name: "Test Team", competition: competition)
     invitation = TeamInvitation.create!(
       team: team,

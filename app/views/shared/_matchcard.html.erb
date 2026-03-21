@@ -1,30 +1,71 @@
+<% game = local_assigns[:game] || @game %>
+
+<% team_1 = local_assigns[:team_1] || @team_1 || game&.team_1 %>
+<% team_2 = local_assigns[:team_2] || @team_2 || game&.team_2 %>
+
+<% team_1_score = local_assigns[:team_1_score] || @team_1_score || game&.team_1_score || 0 %>
+<% team_2_score = local_assigns[:team_2_score] || @team_2_score || game&.team_2_score || 0 %>
+
+<% start_time = local_assigns[:start_time] || @start_time || game&.start_time&.strftime("%-I:%M %p") || "TBD" %>
+<% date = local_assigns[:date] || @date || game&.start_time&.strftime("%b %-d, %Y") || "TBD" %>
+
+<% bye_game = game&.respond_to?(:bye?) ? game.bye? : team_2.blank? %>
+<% complete = game&.respond_to?(:complete) ? game.complete : false %>
+<% winner = team_1_score > team_2_score ? :team_1 : (team_2_score > team_1_score ? :team_2 : nil) %>
+
 <div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>
-      <p class="text-sm font-bold text-green-600">Time</p>
-      <p class="text-sm text-neutral-500 dark:text-neutral-400">Date</p>
+      <% if complete %>
+        <p class="text-sm font-bold text-red-600">Game Finished</p>
+      <% else %>
+        <p class="text-sm font-bold text-green-600"><%= start_time %></p>
+      <% end %>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= date %></p>
     </div>
 
     <!-- Teams -->
     <div class="flex items-center justify-center gap-8 w-full">
+      <div>
+        <%# Team_1 Score Here %>
+        <div id="team_1_score">
+          <h2 class="<%= winner == :team_1 && complete ? 'text-green-600' : '' %>"><%= team_1_score %></h2>
+        </div>
+      </div>
+
       <!-- Home Team -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+          <%= team_1.respond_to?(:name) ? team_1.name : (team_1.presence || "TBD") %>
+        </span>
       </div>
 
       <!-- VS -->
-      <span class="text-sm text-neutral-500 dark:text-neutral-400">vs.</span>
+      <span class="text-sm text-neutral-500 dark:text-neutral-400"><%= bye_game ? "vs." : "vs." %></span>
 
-      <!-- Away Team -->
+      <!-- Away Team / BYE -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">Team</span>
+        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+          <% if bye_game %>
+            BYE
+          <% else %>
+            <%= team_2.respond_to?(:name) ? team_2.name : (team_2.presence || "TBD") %>
+          <% end %>
+        </span>
+      </div>
+
+      <div>
+        <%# Team_2 Score here %>
+        <div id="team_2_score">
+          <h2 class="<%= winner == :team_2 && complete ? 'text-green-600' : '' %>"><%= bye_game ? "-" : team_2_score %></h2>
+        </div>
       </div>
     </div>
 
     <!-- Venue -->
-    <p class="text-sm text-neutral-500 dark:text-neutral-400">Location</p>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= game&.location.presence || "TBD" %></p>
   </div>
 </div>

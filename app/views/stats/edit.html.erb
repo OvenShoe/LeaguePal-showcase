@@ -1,0 +1,17 @@
+<h1>Edit Stat</h1>
+
+<%= simple_form_for [@game, @stat] do |f| %>
+  <%= f.input :user_id, label: "Player", collection: @game.team_1.team_members.map(&:user) + @game.team_2.team_members.map(&:user) %>
+  <%= f.input :label, label: "Stat label", as: :select, collection: ["goal", "assist", "save"].map { |l| [l.humanize, l] } %>
+  <%= f.input :value, label: "Value" %>
+  <%= f.button :submit, "Update stat", class: "btn btn-primary" %>
+<% end %>
+<div class="mt-4 flex gap-3">
+  <%= link_to "Back to game", game_path(@game), class: "btn btn-secondary" %>
+
+  <%= button_to "Delete stat",
+      game_stat_path(@game, @stat),
+      method: :delete,
+      data: { turbo_confirm: "Delete this stat?" },
+      class: "btn btn-danger" %>
+</div>

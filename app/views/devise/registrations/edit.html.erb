@@ -1,4 +1,62 @@
-<h2>Edit Your Profile</h2>
+<h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+<h3>Your AI Avatar Gallery</h3>
+
+<div class="flex gap-4 flex-wrap mb-5">
+  <% resource.ai_avatars.last(8).reverse_each do |avatar| %>
+
+    <% selected = resource.avatar.attached? && resource.avatar.blob_id == avatar.blob_id %>
+
+    <div class="text-center relative">
+
+      <%= button_to set_avatar_path(avatar.id),
+          method: :post,
+          class: "border-0 bg-none p-0" do %>
+        <%= image_tag avatar,
+            width: 120,
+            height: 120,
+            class: "rounded-full object-cover cursor-pointer #{selected ? 'border-4 border-green-500' : 'border-4 border-gray-300'}" %>
+      <% end %>
+
+      <% if selected %>
+        <small>Current Avatar</small>
+      <% else %>
+        <small>Click to use</small>
+      <% end %>
+
+      <%= button_to "Delete Round", admin_round_path(@round),
+          method: :delete,
+          data: { confirm: "Delete this avatar?", turbo_confirm: "Delete this avatar?" },
+          style: "
+            display:block;
+            margin-top:4px;
+            background:#e53e3e;
+            color:white;
+            border:none;
+            border-radius:4px;
+            padding:3px 10px;
+            cursor:pointer;
+            font-size:12px;
+          " do %>
+        🗑 Delete
+      <% end %>
+
+    </div>
+
+  <% end %>
+</div>
+
+<h3>Generate AI Avatar</h3>
+
+<% if resource.avatar.attached? %>
+  <%= button_to "Generate AI Avatar",
+      generate_ai_avatar_users_path,
+      method: :post %>
+<% else %>
+  <p>Upload an avatar first to generate an AI version.</p>
+<% end %>
+
+<hr>
 
 <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f| %>
   <%= f.error_notification %>
