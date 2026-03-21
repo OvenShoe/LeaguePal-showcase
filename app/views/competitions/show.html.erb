@@ -5,6 +5,7 @@
   <h2 class="font-bold text-2xl">Next Game</h1>
   <h2 class="font-bold text-2xl mb-6">Next Game</h1>
   <%# stats card %>
+  <%= render "shared/statscard", top_stats: @top_stats, title: "Competition Leaders", show_user: true %>
   <h2 class="font-bold text-2xl mt-6">Competition Standings</h1>
   <%= render "/shared/standingstable" %>
     <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
@@ -14,7 +15,6 @@
       <li class="hover:font-bold">Defence</li>
     </ul>
 
-  <%= render "/shared/statscard" %>
 
 </div>
 
@@ -27,7 +27,6 @@
     <h2 class="text-2xl mt-4">Competition Standings</h2>
     <%= render "shared/standingstable" %>
     <h2 class="text-2xl mt-4">Competition Statistics</h2>
-    <%= render "shared/statscard" %>
 
 
   <% if current_user&.is_admin? %>

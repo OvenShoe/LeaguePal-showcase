@@ -80,9 +80,21 @@ class GamesController < ApplicationController
     highest_score = team_scores.values.max
     winning_team_ids = team_scores.select { |_team_id, score| score == highest_score }.keys
 
-    return :draw if winning_team_ids.size > 1
+    if winning_team_ids.size > 1
+        # Return array of both teams
+        teams = Teams.where(id: winning_team_ids)
+        teams.each do |team|
+          # update draws + 1
+          draws = team.draws
+          draws += 1
+          team.update!(draws: draws)
+        end
+      return :draw
+    end
 
-    Team.find_by(id: winning_team_ids.first)
+    winner = Team.find_by(id: winning_team_ids.first)
+    wins = winner.wins += 1
+    winner.update!(wins: wins)
   end
 
   def game_stats

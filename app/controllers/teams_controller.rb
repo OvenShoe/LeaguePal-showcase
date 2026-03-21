@@ -4,8 +4,9 @@ class TeamsController < ApplicationController
   before_action :authenticate_or_allow_with_token!, only: [ :show ]
 
   def index
-    @competition = @team.competition
-    @comp_teams = @competition.teams
+    @user_teams = current_user.teams
+    @captain_teams = Team.joins(:team_members)
+                     .where(team_members: { user_id: current_user.id, role: TeamMember.roles[:captain] })
   end
 
   def edit
