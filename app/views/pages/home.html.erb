@@ -1,9 +1,22 @@
-  <div class>
-    <% if user_signed_in? %>
-      <div>
-        <p class="text-large">Signed in as <%= current_user.first_name%> email: <%= current_user.email%></p>
-      </div>
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="mx-auto w-full max-w-sm">
+    <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
+      Welcome, <%= current_user.first_name %>!
+    </h1>
+    <p class="mt-2 text-center text-sm text-gray-500">What would you like to do today?</p>
+  </div>
 
+<div class="mt-5 mx-auto w-full max-w-sm flex flex-col">
+    <%= link_to "View all competitions", competitions_path,
+        class: "mb-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
+
+    <% if current_user&.admin? %>
+      <%= link_to "Create New Competition", new_admin_competition_path,
+          class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+    <% end %>
+
+    <%= link_to "Edit Profile", edit_user_registration_path,
+        class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
 
       <div>
         <%= link_to "My teams", teams_path %>
