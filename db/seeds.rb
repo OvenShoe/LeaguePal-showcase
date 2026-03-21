@@ -1,22 +1,6 @@
-Stat.delete_all
-puts "Clearing Stats..."
-Trophy.delete_all
-puts "Clearing Trophies..."
-Game.delete_all
-puts "Clearing Games..."
-Round.delete_all
-puts "Clearing Rounds..."
-TeamInvitation.delete_all
-puts "Clearing Team Invitations..."
-TeamMember.delete_all
-puts "Clearing Team Members..."
-Team.delete_all
-puts "Clearing Teams..."
-Competition.delete_all
-puts "Clearing Competitions..."
-CompetitionAdmin.delete_all
-puts "Clearing Competition Admins..."
-User.delete_all
+[Stat, Trophy, Game, Round, TeamInvitation, TeamMember, Team, Competition, CompetitionAdmin, User].each do |model|
+  model.connection.execute("TRUNCATE #{model.table_name} RESTART IDENTITY CASCADE")
+end
 puts "Clearing Users..."
 puts "Clearing complete! 🧹"
 
