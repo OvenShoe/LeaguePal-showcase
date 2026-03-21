@@ -1,6 +1,6 @@
 <% content_for :title, "Showing game" %>
 
-<div class="md:w-2/3 w-full">
+<div class="md:w-2/3 w-full" style="padding-bottom: 7rem;">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
@@ -28,6 +28,10 @@
   <% end %>
 
 
+  <div>
+<turbo-frame id="statscard">    
+  <%= render "shared/statscard", top_stats: @game.top_stat_per_label, title: "Top Stats This Game", show_user: true %>  </div>
+</turbo-frame>
   <%= turbo_stream_from @game %>
 
   <div class="mt-6">
@@ -36,14 +40,22 @@
       <%= render "stats/list", game: @game, stats: @game.stats.includes(:user).order(created_at: :desc), can_edit: current_user.is_admin? %>
     </div>
   </div>
+  
+</div>
 
-
-
-  <% if current_user.is_admin? %>
-    <%= link_to "Edit this game", edit_admin_round_path(@game), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-    <%= button_to "Destroy this game", @game, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-    <%= link_to "Back to round", admin_round_path(@game.round), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <% else %>
-    <%= link_to "Back to round", round_path(@game.round)  %>
-  <% end %>
+<div class="border-t border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900" style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;">
+  <div class="mx-auto md:w-2/3 w-full">
+    <% if current_user.is_admin? %>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <% unless @game.complete? %>
+          <%= button_to "End game", complete_game_game_path(@game), method: :patch, form_class: "sm:inline-block", class: "btn btn-secondary w-full", data: { turbo_confirm: "Mark this game as complete?" } %>
+        <% end %>
+        <%= link_to "Edit this game", edit_admin_round_path(@game), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+        <%= link_to "Back to round", admin_round_path(@game.round), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+        <%= button_to "Destroy this game", @game, method: :delete, form_class: "sm:inline-block", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+      </div>
+    <% else %>
+      <%= link_to "Back to round", round_path(@game.round), class: "inline-block w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 font-medium" %>
+    <% end %>
+  </div>
 </div>

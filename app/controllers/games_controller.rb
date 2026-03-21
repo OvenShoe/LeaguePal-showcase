@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-  before_action :set_game, only: %i[ show edit update destroy ]
+  before_action :set_game, only: %i[ show edit update destroy complete_game ]
 
   # GET /games or /games.json
   def index
@@ -8,7 +8,7 @@ class GamesController < ApplicationController
 
   # GET /games/1 or /games/1.json
   def show
-    @stat_labels = labels(@game)
+    @stat_labels = @game.labels
     # Handles when either team is unassigned as well as a bye
     @stat = Stat.new
     @team_1 = @game.team_1_present? ? Team.find_by(id: @game.team_1_id) || "No assigned team" : "No assigned team"
@@ -43,6 +43,58 @@ class GamesController < ApplicationController
      else
       0
      end
+     @top_stats = @game.top_stat_per_label
+  end
+
+  def complete_game
+    unless current_user.is_admin?
+      redirect_to game_path(@game), alert: "You are not authorized to complete games.", status: :see_other
+      return
+    end
+
+    if @game.complete?
+      redirect_to game_path(@game), notice: "Game is already complete.", status: :see_other
+      return
+    end
+
+    if @game.update(complete: true)
+      redirect_to game_path(@game), notice: "Game marked as complete.", status: :see_other
+    else
+      redirect_to game_path(@game), alert: @game.errors.full_messages.to_sentence, status: :see_other
+    end
+    if @game.complete?
+      @winner = winner(@game)
+    end
+  end
+
+  def winner(game)
+    team_ids = [ game.team_1_id, game.team_2_id ].compact
+    return nil if team_ids.empty?
+
+    scores_by_team_id = Stat.joins("INNER JOIN team_members ON team_members.user_id = stats.user_id")
+                            .where(game_id: game.id, label: "goals", team_members: { team_id: team_ids })
+                            .group("team_members.team_id")
+                            .sum(:value)
+
+    team_scores = team_ids.index_with { |team_id| scores_by_team_id[team_id] || 0 }
+    highest_score = team_scores.values.max
+    winning_team_ids = team_scores.select { |_team_id, score| score == highest_score }.keys
+
+    if winning_team_ids.size > 1
+        # Return array of both teams
+        teams = Teams.where(id: winning_team_ids)
+        teams.each do |team|
+          # update draws + 1
+          draws = team.draws
+          draws += 1
+          team.update!(draws: draws)
+        end
+      return :draw
+    end
+
+    winner = Team.find_by(id: winning_team_ids.first)
+    wins = winner.wins += 1
+    winner.update!(wins: wins)
   end
 
   def game_stats
@@ -112,28 +164,6 @@ class GamesController < ApplicationController
   end
 
   private
-
-    def labels(game)
-      sport = game.round.competition.sport
-      case sport
-      when "Netball"
-        %i[goals assists intercepts deflections turnovers center_passes rebounds]
-      when "Football"
-        %i[goals assists shots tackles dribbles duels_won saves yellow_cards red_cards possession]
-      # when "Rugby"
-      #   %i[tries conversions penalties tackles lineouts scrums yellow_cards red_cards]
-      # when "Basketball"
-      #   %i[3pointers field_goals slam_dunks free_throws points rebounds assists steals blocks turnovers fouls]
-      # when "AFL"
-      #   %i[goals behinds kicks handballs marks tackles hitouts disposals]
-      # when "Cricket"
-      #   %i[runs wickets catches run_outs stumpings maidens wides no_balls]
-      # when "Tennis"
-      #   %i[aces double_faults first_serve_percentage winners unforced_errors break_points_won games_won sets_won]
-      else
-        %i[]
-      end
-    end
 
     def create_player_list_names(game)
       # find both teams

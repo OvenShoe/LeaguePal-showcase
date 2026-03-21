@@ -36,13 +36,26 @@ class StatsController < ApplicationController
           "[Stats#create] success stat_id=#{@stat.id} game_id=#{@game.id} user_id=#{@stat.user_id}"
         )
         format.html { redirect_to game_path(@game), notice: "stat was successfully created." }
-        format.turbo_stream { head :ok }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "statscard",
+            partial: "shared/statscard",
+            locals: { top_stats: @game.top_stat_per_label,
+            title: "Top Stats This Game", show_user: true }
+          )
+        end
       else
         Rails.logger.warn(
           "[Stats#create] failed game_id=#{@game.id} errors=#{@stat.errors.full_messages.join(' | ')}"
         )
         format.html { redirect_to game_path(@game), alert: @stat.errors.full_messages.to_sentence }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("stat_form", partial: "stats/form", locals: { game: @game, stat: @stat }), status: :unprocessable_entity }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "stat_form",
+            partial: "stats/form",
+            locals: { game: @game, stat: @stat }
+          ), status: :unprocessable_entity
+        end
       end
     end
   rescue => e

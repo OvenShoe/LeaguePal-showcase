@@ -1,18 +1,42 @@
-<div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 overflow-hidden rounded-xl drop-shadow-xl">
-  <!-- Header -->
-  <div class="px-4 py-3 border-b border-black/10 dark:border-white/10">
-    <dt class="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-      #1 for Statistic
-    </dt>
-  </div>
-  <!-- Body -->
-  <div class="px-4 py-4 flex items-center justify-between">
-    <div class="flex flex-col gap-1">
-      <span class="text-sm text-neutral-900 dark:text-white">User Name</span>
-      <span class="text-sm text-neutral-500 dark:text-neutral-400">Team Name</span>
-      <span class="text-2xl font-semibold text-neutral-900 dark:text-white mt-1">31</span>
-    </div>
-    <!-- Avatar/Logo placeholder -->
-    <div class="w-20 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-  </div>
+<div class="rounded-md border border-neutral-200 dark:border-neutral-700 p-3 bg-white dark:bg-neutral-900">
+  <% if local_assigns[:title] %>
+    <h2 class="font-bold text-xl mb-2"><%= title %></h2>
+  <% end %>
+  <table class="w-full text-left">
+    <thead>
+      <tr>
+        <% if local_assigns[:show_user] %>
+          <th class="py-1 px-2"></th> <!-- Avatar column header (empty) -->
+        <% end %>
+        <th class="py-1 px-2">Stat</th>
+        <% if local_assigns[:show_user] %>
+          <th class="py-1 px-2">Player</th>
+        <% end %>
+        <th class="py-1 px-2">Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% top_stats.each do |label, stat_or_stats| %>
+        <% Array(stat_or_stats).each do |stat| %>
+          <% next unless stat %>
+          <tr class="align-middle">
+            <% if local_assigns[:show_user] %>
+              <td class="py-2 px-2">
+                <% if stat.user&.ai_avatars&.attached? && stat.user.ai_avatars.any? %>
+                  <%= image_tag url_for(stat.user.ai_avatars.first), class: "w-20 h-16 rounded-full object-cover bg-neutral-200 dark:bg-neutral-600" %>
+                <% else %>
+                  <div class="w-20 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+                <% end %>
+              </td>
+            <% end %>
+            <td class="py-2 px-2 font-medium"><%= label.to_s.titleize %></td>
+            <% if local_assigns[:show_user] %>
+              <td class="py-2 px-2"><%= stat.user&.name || stat.user&.email || "Unknown" %></td>
+            <% end %>
+            <td class="py-2 px-2"><%= stat.value %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
 </div>

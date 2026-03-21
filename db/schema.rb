@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_005202) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
 
   create_table "games", force: :cascade do |t|
     t.integer "bye", null: false
+    t.boolean "complete", default: false, null: false
     t.datetime "created_at", null: false
     t.string "location"
     t.bigint "round_id", null: false
@@ -106,14 +107,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.bigint "team_id", null: false
-    t.string "token", default: "", null: false
+    t.string "token"
     t.string "token_digest", null: false
     t.datetime "updated_at", null: false
     t.index ["invitee_email"], name: "index_team_invitations_on_invitee_email"
     t.index ["inviter_id"], name: "index_team_invitations_on_inviter_id"
     t.index ["role"], name: "index_team_invitations_on_role"
     t.index ["team_id"], name: "index_team_invitations_on_team_id"
-    t.index ["token"], name: "index_team_invitations_on_token", unique: true
     t.index ["token_digest"], name: "index_team_invitations_on_token_digest", unique: true
   end
 
@@ -129,17 +129,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
 
   create_table "teams", force: :cascade do |t|
     t.bigint "competition_id", null: false
-    t.integer "competition_points"
+    t.integer "competition_points", default: 0
     t.datetime "created_at", null: false
-    t.integer "draws"
+    t.integer "draws", default: 0
     t.string "form", default: [], array: true
-    t.integer "games_played"
-    t.integer "losses"
+    t.integer "games_played", default: 0
+    t.integer "losses", default: 0
     t.string "name"
-    t.integer "points_against"
-    t.integer "points_for"
+    t.integer "points_against", default: 0
+    t.integer "points_for", default: 0
     t.datetime "updated_at", null: false
-    t.integer "wins"
+    t.integer "wins", default: 0
     t.index ["competition_id"], name: "index_teams_on_competition_id"
   end
 
@@ -163,7 +163,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_015513) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
-    t.string "thumbnail"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

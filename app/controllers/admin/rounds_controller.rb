@@ -74,4 +74,14 @@ class Admin::RoundsController < Admin::BaseController
     def round_params
       params.require(:round).permit(:name, :id)
     end
+
+    def validate_user
+      # Only allow user admins to perform CRUD actions
+      if current_user.is_admin?
+        Rails.logger.debug("[Stats#validate_user] allowed user_id=#{current_user.id}")
+      else
+        Rails.logger.warn("[Stats#validate_user] blocked user_id=#{current_user&.id}")
+        redirect_to games_path, notice: "Current user is not admin"
+      end
+    end
 end

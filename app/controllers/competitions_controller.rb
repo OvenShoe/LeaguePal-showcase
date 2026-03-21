@@ -18,6 +18,10 @@ class CompetitionsController < ApplicationController
 
   def show
     @next_game = @competition.games.where("start_time >= ?", Time.current).order(:start_time).first
+    @teams = @competition.teams
+    @top_stats = @competition.top_stat_per_label
+    # League standings partial
+    # Reusable stats_helper partial
   end
 
   def new
