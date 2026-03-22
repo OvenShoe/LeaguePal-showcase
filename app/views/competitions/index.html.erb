@@ -1,15 +1,6 @@
 
 <div class="container mx-auto px-4 py-4">
   <%= render "shared/nav" %>
-  <% @competitions.each do |competition| %>
-    <div class="competition">
-      <%= link_to competition, competition_path(competition)%>
-      <p>Sport: <%= competition.sport %></p>
-      <p>Start Date: <%= competition.start_date %></p>
-      <p>End Date: <%= competition.end_date %></p>
-      <%= link_to "Edit", edit_admin_competition_path(competition) %>
-    </div>
-  <% end %>
 
 </div>
 <% if @competitions.exists? %>
