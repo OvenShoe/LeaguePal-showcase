@@ -14,12 +14,13 @@ class UsersController < ApplicationController
   end
 
   def generate_ai_avatar
-    generator = AiAvatarGenerator.new(current_user)
+    team = Team.find(params[:team_id])
+    generator = AiAvatarGenerator.new(current_user, team)
     generator.generate!
 
-    redirect_to edit_user_registration_path, notice: "AI avatar generated!"
+    redirect_to team_path(team), notice: "AI avatar generated!"
   rescue => e
-    redirect_to edit_user_registration_path, alert: e.message
+    redirect_to team_path(team), alert: "Failed to generate avatar: #{e.message}"
   end
 
   def set_avatar
@@ -27,7 +28,7 @@ class UsersController < ApplicationController
 
     current_user.avatar.attach(avatar.blob)
 
-    redirect_to edit_user_registration_path, notice: "Profile avatar updated!"
+    redirect_to edit_user_registration_path, notice: "Profile picture updated!"
   end
 
   def update

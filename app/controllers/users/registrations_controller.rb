@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   # stay in edit page after confirming an edit
-  def after_update_path
+  def after_update_path_for(resource)
     edit_user_registration_path
   end
   # Redirect after sign up based on pending invitation
@@ -26,6 +26,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
         # Token expired or invalid during signup
         super
       end
+    else
+      super
+    end
+  end
+
+    def update_resource(resource, params)
+    if params[:password].blank? && params[:email] == resource.email
+      params.delete(:current_password)
+      resource.update_without_password(params)
     else
       super
     end

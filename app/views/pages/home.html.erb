@@ -62,7 +62,7 @@
 
 <%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
 
-<% if user_signed_in? && current_user.has_games? %>
+<% if user_signed_in? && current_user.next_game %>
   <div>
     <div class="flex justify-center">
       <p class="text-lg font-bold">Next Match</p>

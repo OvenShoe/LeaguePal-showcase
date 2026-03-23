@@ -88,9 +88,14 @@ TeamMember.create!(
   user_id: captain.id,
   role: "captain"
 )
-puts "User created: #{captain.first_name} #{captain.last_name} (#{captain.email} 👩🏾‍🏭) and added as Captain to team #{team.name} 🏆"
+puts "#{captain.first_name} #{captain.last_name} added as Captain to #{team.name} 🏆"
 
-
+TeamMember.create!(
+  team_id: team1.id,
+  user_id: captain.id,
+  role: "player"
+)
+puts "#{captain.first_name} #{captain.last_name} added as Player to #{team1.name} 🏆"
 
 player = User.create!(
   first_name: "Zack",
@@ -110,6 +115,13 @@ player1 = User.create!(
   password: "123456",
   password_confirmation: "123456"
 )
+
+TeamMember.create!(
+  team_id: team1.id,
+  user_id: player1.id,
+  role: "captain"
+)
+puts "#{player1.first_name} #{player1.last_name} added as Captain to #{team1.name} 🏆"
 
 player2 = User.create!(
   first_name: "Sarah",
