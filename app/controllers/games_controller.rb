@@ -8,7 +8,8 @@ class GamesController < ApplicationController
 
   # GET /games/1 or /games/1.json
   def show
-    @stat_labels = @game.labels
+    @all_labels = @game.labels(&:to_s)
+    @top_stats = @all_labels.index_with { |label| @game.top_stat_per_label[label] }
     # Handles when either team is unassigned as well as a bye
     @stat = Stat.new
     @team_1 = @game.team_1_present? ? Team.find_by(id: @game.team_1_id) || "No assigned team" : "No assigned team"
@@ -43,7 +44,6 @@ class GamesController < ApplicationController
      else
       0
      end
-     @top_stats = @game.top_stat_per_label
   end
 
   def complete_game

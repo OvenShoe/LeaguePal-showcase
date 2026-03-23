@@ -1,0 +1,16 @@
+<tr class="align-middle" id="stat-<%= label %>">
+  <% if show_user %>
+    <td class="py-2 px-2">
+      <% if stat&.user&.ai_avatars&.attached? && stat.user.ai_avatars.any? %>
+        <%= image_tag url_for(stat.user.ai_avatars.first), class: "w-20 h-16 rounded-full object-cover bg-neutral-200 dark:bg-neutral-600" %>
+      <% else %>
+        <div class="w-20 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+      <% end %>
+    </td>
+  <% end %>
+  <td class="py-2 px-2 font-medium"><%= label.to_s.titleize %></td>
+  <% if show_user %>
+    <td class="py-2 px-2"><%= stat&.user&.name || stat&.user&.email || "Unknown" %></td>
+  <% end %>
+  <td class="py-2 px-2"><%= stat&.value || 0 %></td>
+</tr>

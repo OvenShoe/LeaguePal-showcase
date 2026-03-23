@@ -31,9 +31,8 @@
         input_html: { class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm" },
         wrapper_html: { class: "space-y-1" } %>
 
-    <div class="grid grid-cols-2 gap-8">
+    <div class="flex justify-between md:flex-row md:space-x-6">
       <div>
-        <p class="block text-sm font-medium text-gray-900 mb-2">Game days</p>
         <%= f.input :game_days,
             as: :check_boxes,
             collection: [
@@ -53,7 +52,6 @@
       </div>
 
       <div>
-        <p class="block text-sm font-medium text-gray-900 mb-2">Game times</p>
         <%= f.input :start_times,
             as: :check_boxes,
             collection: [

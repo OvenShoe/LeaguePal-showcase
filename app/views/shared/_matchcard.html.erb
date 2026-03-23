@@ -13,7 +13,7 @@
 <% complete = game&.respond_to?(:complete) ? game.complete : false %>
 <% winner = team_1_score > team_2_score ? :team_1 : (team_2_score > team_1_score ? :team_2 : nil) %>
 
-<div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
+<div id="matchcard-<%= game.id %>" class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>

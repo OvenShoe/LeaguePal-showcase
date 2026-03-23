@@ -37,12 +37,18 @@ class StatsController < ApplicationController
         )
         format.html { redirect_to game_path(@game), notice: "stat was successfully created." }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "statscard",
-            partial: "shared/statscard",
-            locals: { top_stats: @game.top_stat_per_label,
-            title: "Top Stats This Game", show_user: true }
-          )
+          render turbo_stream: [
+            turbo_stream.replace(
+              "stat-#{@stat.label}",
+              partial: "shared/stat_row",
+              locals: { label: @stat.label, stat: @stat, show_user: true }
+            ),
+            turbo_stream.replace(
+              "statscard",
+              partial: "shared/statscard",
+              locals: { top_stats: @game.top_stat_per_label, all_labels: @game.labels, title: "Top Stats This Game", show_user: true }
+            )
+          ]
         end
       else
         Rails.logger.warn(
@@ -71,6 +77,20 @@ class StatsController < ApplicationController
       if @stat.update(stat_params)
         format.html { redirect_to game_path(@game), notice: "stat was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @stat }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(
+              "stat-#{@stat.label}",
+              partial: "shared/stat_row",
+              locals: { label: @stat.label, stat: @stat, show_user: true }
+            ),
+            turbo_stream.replace(
+              "statscard",
+              partial: "shared/statscard",
+              locals: { top_stats: @game.top_stat_per_label, all_labels: @game.labels, title: "Top Stats This Game", show_user: true }
+            )
+          ]
+        end
       else
         format.html { redirect_to game_path(@game), status: :unprocessable_entity }
         format.json { render json: @stat.errors, status: :unprocessable_entity }
@@ -85,6 +105,20 @@ class StatsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to game_path(@stat.game), notice: "stat was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(
+            "stat-#{@stat.label}",
+            partial: "shared/stat_row",
+            locals: { label: @stat.label, stat: nil, show_user: true }
+          ),
+          turbo_stream.replace(
+            "statscard",
+            partial: "shared/statscard",
+            locals: { top_stats: @stat.game.top_stat_per_label, all_labels: @stat.game.labels, title: "Top Stats This Game", show_user: true }
+          )
+        ]
+      end
     end
   end
 
