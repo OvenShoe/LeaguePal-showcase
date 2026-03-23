@@ -1,16 +1,16 @@
-
 <div class="container mx-auto px-4 py-4">
   <%= render "shared/nav" %>
 
-</div>
-<% if @competitions.exists? %>
-  <% @competitions.each do |comp| %>
-      <%= link_to competition_path(comp), class: "group block m-6 rounded-lg overflow-hidden divide-y divide-gray-200 bg-red shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg" do %>
-        <div class="px-4 py-5 sm:px-6">
-          <h3 class="text-lg font-medium leading-6 text-gray-900 transition-colors group-hover:text-gray-700"><%= comp.name %></h3>
-          <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= comp.sport %></p>
-        </div>
+  <% if @competitions.exists? %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+      <% @competitions.each do |comp| %>
+        <%= link_to competition_path(comp), class: "group block rounded-lg overflow-hidden divide-y divide-gray-200 bg-white border border-gray-200 shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg" do %>
+          <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 transition-colors group-hover:text-gray-700"><%= comp.name %></h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= comp.sport %></p>
+          </div>
+        <% end %>
       <% end %>
+    </div>
   <% end %>
-<% end %>
-
+</div>

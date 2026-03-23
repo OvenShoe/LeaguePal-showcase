@@ -1,6 +1,5 @@
 class User < ApplicationRecord
   belongs_to :team, optional: true
-  has_many :trophies
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -8,6 +7,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   # Use avatar in user edit and create forms
+  has_many :team_avatars
   has_one_attached :avatar
   has_many_attached :ai_avatars
 

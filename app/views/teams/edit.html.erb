@@ -1,20 +1,89 @@
 <div class="container">
+  <% current_team_member = @team.team_members.find_by(user: current_user) %>
+  <% if current_team_member&.captain? %>
     <h1>Edit Team</h1>
 
-    <%= simple_form_for @team do |f| %>
-        <%= f.error_notification %>
-
-        <% if params[:token].present? %>
-            <%= hidden_field_tag :token, params[:token] %>
-        <% end %>
-
-        <div class="form-inputs">
-            <%= f.input :name %>
-            <%= f.input :jersey, as: :file, label: "Jersey" %>
-        </div>
-
-        <div class="form-actions">
-            <%= f.button :submit %>
-        </div>
+    <%= simple_form_for @team, html: { multipart: true, data: { turbo: false } } do |f| %>
+      <%= f.error_notification %>
+      <% if params[:token].present? %>
+        <%= hidden_field_tag :token, params[:token] %>
+      <% end %>
+      <div class="form-inputs">
+        <%= f.input :name %>
+      </div>
+      <div class="form-actions">
+        <%= f.button :submit, "Save Team" %>
+      </div>
     <% end %>
+
+    <hr>
+
+    <%# Team Logo%>
+    <h3>Team Logo</h3>
+    <% if @team.logo.attached? %>
+      <p>Current Logo:</p>
+      <%= image_tag @team.logo, width: 150, style: "border-radius:8px; margin-bottom:10px;" %>
+    <% else %>
+      <p><small style="color:#999">No <%= @team.name %> logo present.</small></p>
+    <% end %>
+
+    <p><strong>Upload a logo:</strong></p>
+    <%= form_with url: upload_logo_team_path(@team), method: :patch, multipart: true, data: { turbo: false } do |f| %>
+      <%= f.file_field :logo, accept: "image/*" %>
+      <%= f.submit "Upload Logo" %>
+    <% end %>
+
+    <p><strong>Or generate a logo with AI:</strong></p>
+    <%= form_with url: generate_logo_team_path(@team), method: :post, data: { turbo: false } do |f| %>
+      <%= label_tag :logo_description, "Describe your team logo" %>
+      <%= text_area_tag :logo_description, "",
+          placeholder: "e.g. A toddler with a hat on and large sunglasses held in a handsfree baby harness",
+          rows: 3,
+          style: "width:100%; margin-bottom:8px;" %>
+      <%= f.submit "Generate Logo",
+          data: { turbo_submits_with: "Please wait as a logo is being generated..." } %>
+    <% end %>
+
+    <hr>
+
+    <%# Team Jersey%>
+    <h3>Team Jersey</h3>
+    <% if @team.jersey.attached? %>
+      <p>Current Jersey:</p>
+      <%= image_tag @team.jersey, width: 150, style: "border-radius:8px; margin-bottom:10px;" %>
+    <% else %>
+      <p><small style="color:#999">No <%= @team.name %> jersey present.</small></p>
+    <% end %>
+
+    <p><strong>Upload a jersey:</strong></p>
+    <%= form_with url: upload_jersey_team_path(@team), method: :patch, multipart: true, data: { turbo: false } do |f| %>
+      <%= f.file_field :jersey, accept: "image/*" %>
+      <%= f.submit "Upload Jersey" %>
+    <% end %>
+
+   <p><strong>Or generate a jersey with AI:</strong></p>
+    <% if @team.logo.attached? %>
+      <p><small style="color:#999">Will use your current logo as a colour and style reference.</small></p>
+      <%= form_with url: generate_jersey_team_path(@team), method: :post, data: { turbo: false } do |f| %>
+        <%= label_tag :jersey_description, "Describe your team jersey (optional)" %>
+        <%= text_area_tag :jersey_description, "",
+            placeholder: "e.g. Dark navy with gold trim and a lightning bolt down the sleeve",
+            rows: 3,
+            style: "width:100%; margin-bottom:8px;" %>
+        <%= f.submit "Generate Jersey with AI",
+            data: { turbo_submits_with: "Please wait as a jersey is being generated..." } %>
+      <% end %>
+    <% else %>
+      <small style="color:#999">
+        Generate or upload a logo first — it will be used as a reference for the jersey.
+      </small>
+    <% end %>
+
+    <hr>
+    <%= link_to "Back to Team", team_path(@team) %>
+
+  <% else %>
+    <p>You do not have permission to edit this team.</p>
+    <%= link_to "Back to Team", team_path(@team) %>
+  <% end %>
 </div>

@@ -62,6 +62,8 @@ gem "cloudinary"
 
 gem "openai", "~> 0.53.0"
 
+gem "anthropic"
+
 gem "simple_form", "~> 5.4"
 
 gem "tailwindcss-rails", "~> 4.4"

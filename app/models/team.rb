@@ -9,6 +9,7 @@ class Team < ApplicationRecord
   has_many :team_members, dependent: :destroy
   has_many :team_invitations, dependent: :destroy
   has_many :users, through: :team_members
+  has_many :team_avatars
 
   has_many :games_as_team_1, class_name: "Game", foreign_key: "team_1_id"
   has_many :games_as_team_2, class_name: "Game", foreign_key: "team_2_id"

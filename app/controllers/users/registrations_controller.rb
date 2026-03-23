@@ -3,6 +3,10 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  # stay in edit page after confirming an edit
+  def after_update_path
+    edit_user_registration_path
+  end
   # Redirect after sign up based on pending invitation
   def after_sign_up_path_for(resource)
     # Check if there's a pending invitation token in session
@@ -30,7 +34,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name ])
-    devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :date_of_birth, :avatar])
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name, :avatar ])
   end
 end
