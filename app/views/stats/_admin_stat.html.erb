@@ -9,4 +9,7 @@
     <span class="text-xs text-neutral-500 ml-2">(<%= team_name %>)</span>
     <span> - <%= stat.label.to_s.singularize.humanize %></span>
     <span class="text-xs opacity-70 ml-2"><%= l(stat.created_at, format: :short) %></span>
+    <%= link_to "Edit Stat", edit_game_stat_path(stat.game, stat), class: "ml-3 text-sm underline" %>
+    <%= link_to "Destroy Stat", game_stat_path(stat.game, stat), method: :delete, data: { confirm: "Are you sure?" }, class: "ml-3 text-sm underline" %>
+  </div>
 </li>
