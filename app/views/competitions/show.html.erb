@@ -2,8 +2,22 @@
 
   <div class="container mx-auto px-4 py-4">
 
-  <h2 class="font-bold text-2xl">Next Game</h1>
-  <h2 class="font-bold text-2xl mb-6">Next Game</h1>
+  <h1 class="font-bold text-4xl mb-4"><%= @competition.name %></h1>
+  <%= render "shared/nav" %>
+  <div class="mb-6">
+   <div>
+      <div class="flex justify-center">
+        <p class="text-lg font-bold">Next Match</p>
+      </div>
+      <div class="flex justify-center">
+        <%= link_to "View Game", game_path(@next_game) %>
+      </div>
+    <div>
+      <%= render "shared/matchcard", game: @next_game %>
+    </div>
+    <h2 class="text-2xl mt-4">Competition Standings</h2>
+    <%= render "shared/standingstable", competition: @competition %>
+
   <%# stats card %>
   <%= render "shared/statscard", top_stats: @top_stats, title: "Competition Leaders", show_user: true %>
   <h2 class="font-bold text-2xl mt-6">Competition Standings</h1>
@@ -19,14 +33,6 @@
 </div>
 
 
-  <h1 class="font-bold text-4xl mb-4"><%= @competition.name %></h1>
-  <%= render "shared/nav" %>
-  <div class="mb-6">
-    <h2 class="text-2xl mb-4">Next Match</h2>
-    <%= render "shared/matchcard" %>
-    <h2 class="text-2xl mt-4">Competition Standings</h2>
-    <%= render "shared/standingstable" %>
-    <h2 class="text-2xl mt-4">Competition Statistics</h2>
 
 
   <% if current_user&.is_admin? %>
