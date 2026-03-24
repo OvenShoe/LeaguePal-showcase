@@ -1,126 +1,174 @@
-<h2><%= @team.name %></h2>
-<p>
-  <div class="w-20 h-20 object-cover" >
-    <%= image_tag @team.jersey if @team.jersey.attached? %>
-  </div>
-</p>
-<h3>Team Members:</h3>
-<ul>
-  <% @team_members.each do |member| %>
-    <li><%= member.user.first_name %> <%= member.user.last_name %> - <%= member.role.capitalize %></li>
-  <% end %>
-</ul>
-<% if current_user&.is_captain_of?(@team) %>
-  <%= link_to "Edit", edit_team_path(@team) %>
-  <%= link_to "Back", teams_path %>
+<div class="max-w-2xl mx-auto mt-8">
+  <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-lg border border-black/10 dark:border-white/10 p-8 flex flex-col items-center">
+    <!-- Team Logo & Name -->
+    <div class="flex flex-col items-center gap-3 mb-6">
+      <% if @team.logo.attached? %>
+        <%= image_tag @team.logo, class: "w-16 h-16 rounded-full object-cover" %>
+      <% else %>
+        <div class="w-24 h-24 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-3xl text-neutral-400">
+          <span>🏆</span>
+        </div>
+      <% end %>
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white"><%= @team.name %></h2>
+    </div>
 
-  <h3 class="mt-6">Add Existing User</h3>
-  <%= simple_form_for @team_member, url: add_member_team_path(@team), method: :post do |f| %>
-    <% if @users.any? %>
-      <%= f.association :user, collection: @users, label_method: :list_name, prompt: "Select a user" %>
-    <% else %>
-      <p>No users available to invite.</p>
-    <% end %>
-      <%= f.button :submit, "Add to team", data: { confirm: "Are you sure you want to add this user to the team?" } %>
-  <% end %>
-
-  <h3 class="mt-6">Invite New User by Email</h3>
-  <%= simple_form_for :team_invitation, url: send_invite_team_path(@team), method: :post do |f| %>
-    <%= f.input :invitee_email, label: "Email", required: true, input_html: { type: 'email' } %>
-    <%= f.button :submit, "Send Invitation" %>
-  <% end %>
-<% end %>
-
-<%# Player avatar %>
-<% if user_signed_in? %>
-  <% current_member = @team.team_members.find_by(user: current_user) %>
-    <% if current_member %>
-
-      <h3>Your Avatar for <%= @team.name %></h3>
-
-      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
-        <% TeamAvatar.where(user: current_user, team: @team).order(created_at: :desc).limit(8).each do |ta| %>
-          <% selected = current_user.avatar.attached? && current_user.avatar.blob_id == ta.blob_id%>
-
-          <div style="text-align:center">
-            <%= button_to set_avatar_path(ta.blob_id), method: :post, style: "border:none; background:none; padding:0;" do %>
-              <%= image_tag rails_blob_path(ta.blob, disposition: "inline"), width: 120, height: 120, style: "border-radius:50%; object-fit:cover; cursor:pointer; border:5px solid #{selected ? '#4CAF50' : '#ddd'};" %>
-            <% end %>
-
-            <small><%= selected ? "Current Avatar" : "Click to use" %></small>
-
-            <%= button_to delete_ai_avatar_path(ta.blob_id), method: :delete,
-                data: { turbo_confirm: "Delete this avatar?" },
-                style: "display:block; margin-top:4px; background:#e53e3e; color:white; border:none; border-radius:4px; padding:3px 10px; cursor:pointer; font-size:12px;" do  %>
-              🗑 Delete
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-
-    <% if !current_user.avatar.attached? %>
-      <p>
-        <small style="color:#999"> Upload a profile photo in <%= link_to "account settings", edit_user_registration_path %> to generate an avatar. </small>
-      </p>
-    <% elsif !@team.jersey.attached? %>
-      <p>
-        <small style="color:#999"> Waiting for the captain to upload a team jersey.</small>
-      </p>
-    <% else %>
-      <%= button_to "Generate My #{@team.name} Avatar",
-          generate_ai_avatar_users_path,
-          method: :post,
-          params: { team_id: @team.id },
-          data: { turbo_submits_with: "Generating your #{@team.name} Avatar, please wait... this takes ~20 seconds" } %>
-    <% end %>
-
-    <hr>
-
-    <%# Logo and Jersey display %>
-    <% if @team.logo.attached? || @team.jersey.attached? %>
-      <h3><%= @team.name %> Kit </h3>
-      <div style="display:flex; gap:20px; flex-wrap:wrap;">
-        <% if @team.logo.attached? %>
-          <div style="text-align:center">
-            <%= image_tag @team.logo, width: 120, style: "border-radius:8px;" %>
-            <p><small>Team logo</small></p>
-          </div>
-        <% end %>
-        <% if @team.jersey.attached? %>
-          <div style="text-align:center">
-            <%= image_tag @team.jersey, width: 120, style: "border-radius:8px;" %>
-            <p><small>Team jersey</small></p>
-          </div>
-        <% end %>
+    <!-- Jersey -->
+    <% if @team.jersey.attached? %>
+      <div class="mb-6">
+        <%= image_tag @team.jersey.variant(resize_to_fit: [120, 120]), class: "w-20 h-20 object-cover rounded-lg border border-neutral-300 dark:border-neutral-700 shadow" %>
+        <div class="text-xs text-neutral-500 mt-1 text-center">Team Jersey</div>
       </div>
     <% end %>
 
-    <%# Captain-only edit %>
+    <!-- Team Members -->
+    <div class="w-full mb-6">
+      <h3 class="text-lg font-semibold text-neutral-800 dark:text-neutral-200 mb-2">Team Members</h3>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <% @team_members.each do |member| %>
+          <li class="bg-neutral-100 dark:bg-neutral-800 rounded px-3 py-2 flex items-center gap-2">
+            <span class="font-medium"><%= member.user.first_name %> <%= member.user.last_name %></span>
+            <span class="ml-auto text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"><%= member.role.capitalize %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
 
+    <!-- Captain Controls -->
     <% if current_user&.is_captain_of?(@team) %>
-      <%= link_to "Manage Team Logo and Jersey ->", edit_team_path(@team) %>
-    <% end %>
-  <% end %>
-<% end %>
+      <div class="w-full mb-6">
+        <div class="flex flex-col gap-4">
+          <%= link_to "Edit Team", edit_team_path(@team), class: "inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition" %>
+          <%= link_to "Back", teams_path, class: "inline-block px-4 py-2 bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded hover:bg-neutral-300 dark:hover:bg-neutral-600 transition" %>
+        </div>
 
-<% if @invitation_token.present? && @invitation.present? %>
-  <div data-controller="team-popup"
-       data-team-popup-token-value="<%= @invitation_token %>"
-       data-team-popup-accept-url-value="<%= team_invitation_accept_path(@invitation) %>"
-       data-team-popup-reject-url-value="<%= team_invitation_reject_path(@invitation) %>"
-       data-team-popup-team-name-value="<%= @team.name %>"
-       class="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm m-4">
-      <h2 class="text-xl font-bold mb-4">Accept invitation?</h2>
-      <p class="text-gray-700 mb-6">You've been invited to join <strong><%= @team.name %></strong></p>
-      <div class="flex gap-4">
-        <button data-action="click->team-popup#acceptInvitation" class="flex-1 bg-green-500 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-green-600 transition-colors">
-          Accept
-        </button>
-        <button data-action="click->team-popup#rejectInvitation" class="flex-1 bg-red-500 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-red-600 transition-colors">
-          Decline
-        </button>
+        <div class="mt-6">
+          <h3 class="text-md font-semibold mb-2">Add Existing User</h3>
+          <%= simple_form_for @team_member, url: add_member_team_path(@team), method: :post do |f| %>
+            <% if @users.any? %>
+              <%= f.association :user, collection: @users, label_method: :list_name, prompt: "Select a user" %>
+            <% else %>
+              <p class="text-sm text-neutral-500">No users available to invite.</p>
+            <% end %>
+            <%= f.button :submit, "Add to team", class: "mt-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition", data: { confirm: "Are you sure you want to add this user to the team?" } %>
+          <% end %>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="text-md font-semibold mb-2">Invite New User by Email</h3>
+          <%= simple_form_for :team_invitation, url: send_invite_team_path(@team), method: :post do |f| %>
+            <%= f.input :invitee_email, label: "Email", required: true, input_html: { type: 'email' } %>
+            <%= f.button :submit, "Send Invitation", class: "mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= render "shared/statscard", top_stats: @team.stats_summary.transform_keys(&:to_s).transform_values { |v| { team: @team, value: v } }, title: "Team Stats", team: @team, show_user: false %>
+  </div>
+
+  <% if @team.next_game %>
+    <div>
+      <h2 class="text-2xl font-bold mt-8 mb-4 text-center">Next Game</h2>
+      <%= link_to game_path(@team.next_game.id), class: "block hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition" do %>
+        <div>
+          <%= render "shared/matchcard", game: @team.next_game %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+      <div class="text-center text-neutral-500 my-4">No upcoming games scheduled.</div>
+    </div>
+  <% end %>
+
+  <%# Player avatar %>
+  <% if user_signed_in? %>
+    <div>
+      <% current_member = @team.team_members.find_by(user: current_user) %>
+      <% if current_member %>
+        <h3>Your Avatar for <%= @team.name %></h3>
+        <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+          <% TeamAvatar.where(user: current_user, team: @team).order(created_at: :desc).limit(8).each do |ta| %>
+            <% selected = current_user.avatar.attached? && current_user.avatar.blob_id == ta.blob_id %>
+            <div style="text-align:center">
+              <%= button_to set_avatar_path(ta.blob_id), method: :post, style: "border:none; background:none; padding:0;" do %>
+                <%= image_tag rails_blob_path(ta.blob, disposition: "inline"), width: 120, height: 120, style: "border-radius:50%; object-fit:cover; cursor:pointer; border:5px solid #{selected ? '#4CAF50' : '#ddd'};" %>
+              <% end %>
+              <small><%= selected ? "Current Avatar" : "Click to use" %></small>
+              <%= button_to delete_ai_avatar_path(ta.blob_id), method: :delete,
+                  data: { turbo_confirm: "Delete this avatar?" },
+                  style: "display:block; margin-top:4px; background:#e53e3e; color:white; border:none; border-radius:4px; padding:3px 10px; cursor:pointer; font-size:12px;" do  %>
+                🗑 Delete
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <% if !current_user.avatar.attached? %>
+          <p>
+            <small style="color:#999"> Upload a profile photo in <%= link_to "account settings", edit_user_registration_path %> to generate an avatar. </small>
+          </p>
+        <% elsif !@team.jersey.attached? %>
+          <p>
+            <small style="color:#999"> Waiting for the captain to upload a team jersey.</small>
+          </p>
+        <% else %>
+          <%= button_to "Generate My #{@team.name} Avatar",
+              generate_ai_avatar_users_path,
+              method: :post,
+              params: { team_id: @team.id },
+              data: { turbo_submits_with: "Generating your #{@team.name} Avatar, please wait... this takes ~20 seconds" } %>
+        <% end %>
+
+        <hr>
+
+        <%# Logo and Jersey display %>
+        <% if @team.logo.attached? || @team.jersey.attached? %>
+          <h3><%= @team.name %> Kit </h3>
+          <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <% if @team.logo.attached? %>
+              <div style="text-align:center">
+                <%= image_tag @team.logo, width: 120, style: "border-radius:8px;" %>
+                <p><small>Team logo</small></p>
+              </div>
+            <% end %>
+            <% if @team.jersey.attached? %>
+              <div style="text-align:center">
+                <%= image_tag @team.jersey, width: 120, style: "border-radius:8px;" %>
+                <p><small>Team jersey</small></p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Captain-only edit %>
+        <% if current_user&.is_captain_of?(@team) %>
+          <%= link_to "Manage Team Logo and Jersey ->", edit_team_path(@team) %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @invitation_token.present? && @invitation.present? %>
+    <div data-controller="team-popup"
+         data-team-popup-token-value="<%= @invitation_token %>"
+         data-team-popup-accept-url-value="<%= team_invitation_accept_path(@invitation) %>"
+         data-team-popup-reject-url-value="<%= team_invitation_reject_path(@invitation) %>"
+         data-team-popup-team-name-value="<%= @team.name %>"
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm m-4">
+        <h2 class="text-xl font-bold mb-4">Accept invitation?</h2>
+        <p class="text-gray-700 mb-6">You've been invited to join <strong><%= @team.name %></strong></p>
+        <div class="flex gap-4">
+          <button data-action="click->team-popup#acceptInvitation" class="flex-1 bg-green-500 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-green-600 transition-colors">
+            Accept
+          </button>
+          <button data-action="click->team-popup#rejectInvitation" class="flex-1 bg-red-500 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-red-600 transition-colors">
+            Decline
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>

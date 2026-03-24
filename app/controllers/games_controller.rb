@@ -1,6 +1,8 @@
 class GamesController < ApplicationController
   before_action :set_game, only: %i[ show edit update destroy complete_game ]
 
+
+
   # GET /games or /games.json
   def index
     @games = Game.all
@@ -110,51 +112,59 @@ class GamesController < ApplicationController
 
   def update_team_stats(game)
     teams = [ game.team_1, game.team_2 ]
-    stats = game.stats
-
-    # Calculate goals for each team
-    team_goals = {}
     teams.each do |team|
-      user_ids = team.team_members.pluck(:user_id)
-      team_goals[team.id] = stats.where(label: "goals", user_id: user_ids).sum(:value)
-    end
+      # Find all completed games for this team
+      games = Game.where("(team_1_id = :id OR team_2_id = :id) AND complete = true", id: team.id)
 
-    # Determine outcome for form
-    team_ids = teams.map(&:id)
-    highest_score = team_goals.values.max
-    winning_team_ids = team_goals.select { |_team_id, score| score == highest_score }.keys
-    draw = winning_team_ids.size > 1
+      points_for = 0
+      points_against = 0
+      games_played = games.count
+      wins = 0
+      draws = 0
+      losses = 0
+      form = []
 
-    teams.each do |team|
-      # Determine outcome for this team
-      if draw
-        outcome = "D"
-      elsif team.id == winning_team_ids.first
-        outcome = "W"
-      else
-        outcome = "L"
+      games.order(:id).each do |g|
+        team_1_user_ids = g.team_1.team_members.pluck(:user_id)
+        team_2_user_ids = g.team_2.team_members.pluck(:user_id)
+        team_1_goals = g.stats.where(label: "goals", user_id: team_1_user_ids).sum(:value)
+        team_2_goals = g.stats.where(label: "goals", user_id: team_2_user_ids).sum(:value)
+
+        if team.id == g.team_1_id
+          goals_for = team_1_goals
+          goals_against = team_2_goals
+        else
+          goals_for = team_2_goals
+          goals_against = team_1_goals
+        end
+
+        points_for += goals_for
+        points_against += goals_against
+
+        # Determine result for this game
+        if goals_for > goals_against
+          wins += 1
+          form << "W"
+        elsif goals_for < goals_against
+          losses += 1
+          form << "L"
+        else
+          draws += 1
+          form << "D"
+        end
       end
 
-      # Update form (prepend most recent outcome, keep last 5)
-      form = team.form.to_s
-      new_form = (outcome + form)[0, 5]
-
-      # Update games played
-      games_played = team.games_played.to_i += 1
-
-      # Points for: goals scored by this team
-      points_for = team.points_for.to_i + team_goals[team.id].to_i
-
-      # Points against: goals scored by opponent
-      opponent_id = (team_ids - [ team.id ]).first
-      points_against = team.points_against.to_i + team_goals[opponent_id].to_i
-      games_played = team.games_played.to_i += 1
+      # Only keep last 5 results for form
+      form_str = form.reverse.take(5).join
 
       team.update!(
-        form: new_form,
-        games_played: games_played,
         points_for: points_for,
-        points_against: points_against
+        points_against: points_against,
+        games_played: games_played,
+        wins: wins,
+        draws: draws,
+        losses: losses,
+        form: form_str
       )
     end
   end

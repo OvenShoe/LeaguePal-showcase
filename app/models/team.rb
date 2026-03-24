@@ -1,7 +1,20 @@
 # frozen_string_literal: true
 
 class Team < ApplicationRecord
-      # Returns an array of last 5 results: 'W', 'L', or 'D'
+  # Returns an array of last 5 results: 'W', 'L', or 'D'
+  belongs_to :competition
+
+  has_one_attached :logo
+  has_one_attached :jersey
+
+  has_many :team_members, dependent: :destroy
+  has_many :team_invitations, dependent: :destroy
+  has_many :users, through: :team_members
+  has_many :team_avatars
+
+  has_many :games_as_team_1, class_name: "Game", foreign_key: "team_1_id"
+  has_many :games_as_team_2, class_name: "Game", foreign_key: "team_2_id"
+
       def form
         all_games = (games_as_team_1 + games_as_team_2)
           .select { |g| g.start_time.present? && g.respond_to?(:complete) && g.complete }
@@ -37,16 +50,12 @@ class Team < ApplicationRecord
           .group(:label)
           .sum(:value)
     end
-  belongs_to :competition
 
-  has_one_attached :logo
-  has_one_attached :jersey
-
-  has_many :team_members, dependent: :destroy
-  has_many :team_invitations, dependent: :destroy
-  has_many :users, through: :team_members
-  has_many :team_avatars
-
-  has_many :games_as_team_1, class_name: "Game", foreign_key: "team_1_id"
-  has_many :games_as_team_2, class_name: "Game", foreign_key: "team_2_id"
+  def next_game
+    next_game = self.competition.games
+      .where("(team_1_id = :id OR team_2_id = :id) AND start_time >= :now", id: id, now: Time.current)
+      .order(:start_time)
+      .first
+    next_game.present? ? next_game : nil
+  end
 end
