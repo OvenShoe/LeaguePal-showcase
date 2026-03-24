@@ -35,7 +35,13 @@
                 <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.points_for || 0 %></td>
                 <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.points_against || 0 %></td>
                 <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.wins.to_i * 3 + team.draws.to_i %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.form || '' %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>">
+                  <% if team.form.present? %>
+                    <%= team.form.join(' ') %>
+                  <% else %>
+                    &ndash;
+                  <% end %>
+                </td>
                 <td class="pl-3 pr-6 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.games_played || 0 %></td>
               </tr>
             <% end %>

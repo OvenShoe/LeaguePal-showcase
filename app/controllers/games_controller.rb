@@ -109,7 +109,7 @@ class GamesController < ApplicationController
   end
 
   def update_team_stats(game)
-    teams = game.teams
+    teams = [ game.team_1, game.team_2 ]
     stats = game.stats
 
     # Calculate goals for each team
@@ -140,7 +140,7 @@ class GamesController < ApplicationController
       new_form = (outcome + form)[0, 5]
 
       # Update games played
-      games_played = team.games_played.to_i + 1
+      games_played = team.games_played.to_i += 1
 
       # Points for: goals scored by this team
       points_for = team.points_for.to_i + team_goals[team.id].to_i
@@ -148,6 +148,7 @@ class GamesController < ApplicationController
       # Points against: goals scored by opponent
       opponent_id = (team_ids - [ team.id ]).first
       points_against = team.points_against.to_i + team_goals[opponent_id].to_i
+      games_played = team.games_played.to_i += 1
 
       team.update!(
         form: new_form,

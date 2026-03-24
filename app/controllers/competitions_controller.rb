@@ -19,7 +19,10 @@ class CompetitionsController < ApplicationController
   def show
     @next_game = @competition.games.where("start_time >= ?", Time.current).order(:start_time).first
     @teams = @competition.teams
+    @user_teams = user_teams_in_competition(current_user, @competition)
     @top_stats = @competition.top_stat_per_label
+    # outline team stats using the game to join user
+    @games = @competition.games
     # League standings partial
     # Reusable stats_helper partial
   end
@@ -49,6 +52,11 @@ class CompetitionsController < ApplicationController
   end
 
   private
+
+  # Returns the team(s) a user belongs to in a given competition
+  def user_teams_in_competition(user, competition)
+    competition.teams.joins(:team_members).where(team_members: { user_id: user.id }).distinct
+  end
 
   def set_competition
     @competition = Competition.find(params[:id])
