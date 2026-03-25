@@ -1,12 +1,14 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+<div class="flex min-h-full flex-col justify-center px-6 py-1 lg:px-8">
   <div class="mx-auto w-full max-w-sm">
-    <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
+    <h1 class="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
       Welcome, <%= current_user.first_name %>!
     </h1>
     <p class="mt-2 text-center text-sm text-gray-500">What would you like to do today?</p>
   </div>
 
 <div class="mt-5 mx-auto w-full max-w-sm flex flex-col">
+    <%= link_to "View all competitions", competitions_path,
+        class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
 
     <% if current_user&.admin? %>
       <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
@@ -22,38 +24,17 @@
 
     <%= link_to "Edit Profile", edit_user_registration_path,
         class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-
+<hr>
       <div>
-          <p class="mb-4 text-center text-sm text-gray-500">Explore your teams and competitions:</p>
-          <% if current_user.teams.present?%>
-            <%= link_to "My teams", teams_path,
-                class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-          <% else %>
-            <p class="mb-4 text-center text-sm text-gray-500">You are not currently part of any teams.</p>
-          <% end %>
+        <%= link_to "My teams", teams_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+        <%= link_to "My competitions", competitions_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"  %>
 
-          <% if current_user.competitions.present? %>
-            <%= link_to "My competitions", competitions_path,
-                class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-          <% else %>
-            <p class="mb-4 text-center text-sm text-gray-500">You are not currently registered for any competitions.</p>
-          <% end %>
+<hr>
+        <p>
+          <%= link_to "Edit Profile", edit_user_registration_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+          <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-rose-400 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-500" %>
+        </p>
       </div>
+
   </div>
-
-  <% if user_signed_in? && current_user.next_game %>
-    <%= link_to game_path(current_user.next_game.id), class: "block" do %>
-      <div>
-        <div class="flex justify-center">
-          <p class="text-lg font-bold">Next Match</p>
-        </div>
-        <div class="flex justify-center">
-          <span class="text-gray-600 hover: text-red">View Game</span>
-        </div>
-        <div>
-          <%= render "shared/matchcard", game: current_user.next_game %>
-        </div>
-      </div>
-    <% end %>
-  <% end %>
 </div>
