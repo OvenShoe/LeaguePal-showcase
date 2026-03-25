@@ -10,7 +10,9 @@ Rails.application.routes.draw do
 
   # Public-facing resources
   resources :users, only: %i[index show edit update], constraints: { id: /\d+/ }
-  resources :competitions, only: %i[index new create show edit update]
+  resources :competitions, only: %i[index new create show edit update] do
+    resources :games, only: %i[ index ]
+  end
   resources :teams, only: %i[show edit index update] do
     post :add_member, on: :member
     post :send_invite, on: :member

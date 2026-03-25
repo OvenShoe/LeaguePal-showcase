@@ -77,62 +77,66 @@ class Admin::CompetitionsController < ApplicationController
     redirect_to admin_competition_path(@competition), alert: "Failed to send invitation: #{e.message}"
   end
 
-  def generate_league
-    raise ArgumentError, "League scaffold has already been generated" if @competition.scaffold_generated?
+    def generate_league
+      begin
+        raise ArgumentError, "League scaffold has already been generated" if @competition.scaffold_generated?
 
-    permitted = generate_league_params
-    ties = permitted[:ties].to_i
-    comp = permitted[:competition] || ActionController::Parameters.new
+        permitted = generate_league_params
+        ties = permitted[:ties].to_i
+        comp = permitted[:competition] || ActionController::Parameters.new
 
-    game_days = if comp.key?(:game_days) || comp.key?("game_days")
-                  Array(comp[:game_days] || comp["game_days"]).reject(&:blank?).map(&:to_i)
-    else
-                  Array(@competition.game_days)
+        game_days = if comp.key?(:game_days) || comp.key?("game_days")
+                      Array(comp[:game_days] || comp["game_days"]).reject(&:blank?).map(&:to_i)
+        else
+                      Array(@competition.game_days)
+        end
+
+        start_times = if comp.key?(:start_times) || comp.key?("start_times")
+                        Array(comp[:start_times] || comp["start_times"]).reject(&:blank?)
+        else
+                        Array(@competition.start_times)
+        end
+
+        locations = if comp.key?(:locations) || comp.key?("locations")
+                      Array(comp[:locations] || comp["locations"]).reject(&:blank?)
+        else
+                      Array(@competition.locations)
+        end
+
+        raise ArgumentError, "Please select at least one game day" if game_days.empty?
+        raise ArgumentError, "Please select at least one start time" if start_times.empty?
+
+        @competition.update!(
+          game_days: game_days,
+          start_times: start_times,
+          locations: locations
+        )
+
+        @teams = @competition.teams
+        team_count = @teams.count
+        locations = Array(@competition.locations).reject(&:blank?)
+
+        raise ArgumentError, "At least two teams are required to generate a league" if team_count < 2
+        raise ArgumentError, "Ties must be greater than 0" if ties <= 0
+
+        ActiveRecord::Base.transaction do
+          round_count_for(team_count, ties).times { @competition.rounds.create! }
+          generate_games(team_count)
+          populate_league
+          add_game_dates
+        end
+
+        @competition.update!(scaffold_generated: true)
+        flash[:notice] = "League scaffold created successfully."
+        redirect_to admin_competition_path(@competition)
+      rescue StandardError => e
+        Rails.logger.error("Generate league failed: #{e.class}")
+        Rails.logger.error("Message: #{e.message}")
+        Rails.logger.error("Backtrace: #{e.backtrace.first(10).join("\n")}")
+        flash[:alert] = "Failed to generate league: #{e.message}"
+        redirect_to admin_competition_path(@competition)
+      end
     end
-
-    start_times = if comp.key?(:start_times) || comp.key?("start_times")
-                    Array(comp[:start_times] || comp["start_times"]).reject(&:blank?)
-    else
-                    Array(@competition.start_times)
-    end
-
-    locations = if comp.key?(:locations) || comp.key?("locations")
-                  Array(comp[:locations] || comp["locations"]).reject(&:blank?)
-    else
-                  Array(@competition.locations)
-    end
-
-    raise ArgumentError, "Please select at least one game day" if game_days.empty?
-    raise ArgumentError, "Please select at least one start time" if start_times.empty?
-
-    @competition.update!(
-      game_days: game_days,
-      start_times: start_times,
-      locations: locations
-    )
-
-    @teams = @competition.teams
-    team_count = @teams.count
-    locations = Array(@competition.locations).reject(&:blank?)
-
-    raise ArgumentError, "At least two teams are required to generate a league" if team_count < 2
-    raise ArgumentError, "Ties must be greater than 0" if ties <= 0
-
-    ActiveRecord::Base.transaction do
-      round_count_for(team_count, ties).times { @competition.rounds.create! }
-      generate_games(team_count)
-      populate_league
-      add_game_dates
-    end
-
-    @competition.update!(scaffold_generated: true)
-    redirect_to admin_competition_path(@competition), notice: "League scaffold created successfully."
-  rescue StandardError => e
-    Rails.logger.error("Generate league failed: #{e.class}")
-    Rails.logger.error("Message: #{e.message}")
-    Rails.logger.error("Backtrace: #{e.backtrace.first(10).join("\n")}")
-    redirect_to admin_competition_path(@competition), alert: "Failed to generate league: #{e.message}"
-  end
 
   def generate_games(team_count)
     game_count = games_per_round(team_count)

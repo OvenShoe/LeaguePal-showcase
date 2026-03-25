@@ -1,0 +1,45 @@
+
+<% competitions.each do |comp| %>
+        <% path = current_user.is_admin? ? admin_competition_path(comp) : competition_path(comp) %>
+        <% team = current_user.teams.find_by(competition_id: comp.id) %>
+    <%= link_to path, class: "block mb-4" do %>
+        <div class="p-4 border rounded-lg shadow-sm bg-white flex flex-col items-center justify-center text-center transition-transform duration-150 hover:scale-105 hover:shadow-lg cursor-pointer">
+    
+            <% if comp.name.present? %>
+                <h2 class="text-xl font-bold mb-1 w-full"><%= comp.name %></h2>
+            <% else %>
+                <h2 class="text-xl font-bold mb-1 w-full">No comp name present</h2>
+            <% end %>
+            
+            <% if comp.sport.present? %>
+                <p class="text-gray-700 mb-1 w-full">Sport: <%= comp.sport %></p>
+            <% else %>
+                <p class="text-gray-700 mb-1 w-full">No Sport Present</p>
+            <% end %>
+        
+        
+            <% if comp.start_date.present? %>
+                <p class="text-gray-700 mb-1 w-full">Start Date: <%= comp.start_date.strftime('%B %d, %Y') %></p>
+            <% else %>
+                <p class="text-gray-700 mb-1 w-full">No Start Date Present</p>
+            <% end %>
+        
+            <% if current_user && team %>
+                <div class="mt-2 p-2 flex flex-col items-center bg-gray-50 rounded w-full">
+                    <span class="font-semibold">Your Team:</span>
+                    <span class="flex flex-col items-center">
+                    <span><%= team.name %></span>
+                    <% if team.logo.present? %>
+                        <%= image_tag(team.logo, width: 40, style: "border-radius:8px; margin-top:6px;") %>
+                    <% end %>
+                    </span>
+                </div>
+            <% else %>
+                <div class="mt-2 p-2 flex flex-col items-center bg-gray-90 rounded w-full">
+                    <span class="font-semibold mb-2">No Team Joined</span>
+                    <span class="inline-block w-10 h-10 bg-gray-300 rounded-full"></span>
+                </div>
+            <% end %>
+        </div>
+    <% end %>
+<% end %>
