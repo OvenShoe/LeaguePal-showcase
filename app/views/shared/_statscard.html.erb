@@ -7,18 +7,45 @@
       <tr>
         <% if local_assigns[:show_user] %>
           <th class="py-1 px-2"></th> <!-- Avatar column header (empty) -->
-        <% end %>
-        <th class="py-1 px-2">Stat</th>
-        <% if local_assigns[:show_user] %>
+          <th class="py-1 px-2">Stat</th>
           <th class="py-1 px-2">Player</th>
+          <th class="py-1 px-2">Value</th>
+        <% else %>
+          <th class="py-1 px-2">Team</th> <!-- Team logo/name column, no header -->
+          <th class="py-1 px-2">Stat</th>
+          <th class="py-1 px-2">Value</th>
         <% end %>
-        <th class="py-1 px-2">Value</th>
       </tr>
     </thead>
     <tbody>
-      <% (local_assigns[:all_labels] || top_stats.keys).each do |label| %>
-        <% stat = Array(top_stats[label]).compact.first %>
-        <%= render "shared/stat_row", label: label, stat: stat, show_user: local_assigns[:show_user] %>
+      <% if local_assigns[:show_user] %>
+        <% (local_assigns[:all_labels] || top_stats.keys).each do |label| %>
+          <% stat = Array(top_stats[label]).compact.first %>
+          <%= render "shared/stat_row", label: label, stat: stat, show_user: local_assigns[:show_user] %>
+        <% end %>
+      <% else %>
+        <% top_stats.each do |label, data| %>
+          <% team = data[:team] if data.is_a?(Hash) %>
+          <tr>
+            <td class="py-1 px-2">
+              <% if team && team.respond_to?(:logo) && team.logo.attached? %>
+                <%= image_tag @team.logo, width: 60, style: "border-radius:8px;" %>              <% else %>
+                <span class="inline-block w-8 h-8 rounded-full bg-gray-300 mr-2 align-middle"></span>
+              <% end %>
+              <%= link_to team&.name, team_path(team) || 'Unknown Team' %>
+            </td>
+            <td class="py-1 px-2"><%= label.to_s.titleize %></td>
+            <td class="py-1 px-2">
+              <% if data.is_a?(Hash) && data[:value] %>
+                <%= data[:value] %>
+              <% elsif defined?(stat_totals) && stat_totals[label] %>
+                <%= stat_totals[label] %>
+              <% else %>
+                <!-- Value not available -->
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
     </tbody>
   </table>

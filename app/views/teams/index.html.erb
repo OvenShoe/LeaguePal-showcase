@@ -1,20 +1,21 @@
-<h2>app/views/teams/index.html.erb</h2>
-<% if @captain_teams.present? %>
-    <div>
-        <h2>Teams I am captain of </h2>
-        <% @captain_teams.each do |team| %>
-            <%= render partial: "shared/teamcard", locals: { team: team } %>
-        <% end %>
-    </div>
-<% end %>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">My Teams</h1>
 
-<% if @user_teams.present?  %>
-    <div>
-    <h2>My teams:</h2>
-    <% @user_teams.each do |team| %>
-        <%= render partial: "shared/teamcard", locals: { team: team } %>
-    <% end %>
-    </div>
-<% end %>
+  <% if @captain_teams.present? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2>Teams I am captain of </h2>
+          <% @captain_teams.each do |team| %>
+              <%= render partial: "shared/teamcard", locals: { team: team } %>
+          <% end %>
+      </div>
+  <% end %>
 
-
+  <% if @user_teams.present?  %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h2>My teams:</h2>
+      <% @user_teams.each do |team| %>
+          <%= render partial: "shared/teamcard", locals: { team: team } %>
+      <% end %>
+      </div>
+  <% end %>
+</div>

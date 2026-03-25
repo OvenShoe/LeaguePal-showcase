@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 
 class Competition < ApplicationRecord
+    # Returns a hash: { "goals" => { team: team, value: total }, ... } for each stat label
+    def top_team_per_stat
+      result = {}
+      teams.each do |team|
+        team.stats_summary.each do |label, value|
+          if result[label].nil? || value > result[label][:value]
+            result[label] = { team: team, value: value }
+          end
+        end
+      end
+      result
+    end
   enum :sport, { unassigned: 0, Netball: 1, Football: 2 }, default: :unassigned
   validates :sport, presence: true
   belongs_to :competition_admin

@@ -1,6 +1,6 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+<div class="flex min-h-full flex-col justify-center px-6 py-1 lg:px-8">
   <div class="mx-auto w-full max-w-sm">
-    <h1 class="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
+    <h1 class="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
       Welcome, <%= current_user.first_name %>!
     </h1>
     <p class="mt-2 text-center text-sm text-gray-500">What would you like to do today?</p>
@@ -8,70 +8,33 @@
 
 <div class="mt-5 mx-auto w-full max-w-sm flex flex-col">
     <%= link_to "View all competitions", competitions_path,
-        class: "mb-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500" %>
+        class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
 
     <% if current_user&.admin? %>
-      <%= link_to "Create New Competition", new_admin_competition_path,
-          class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+      <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+        <p class="text-xl text-center">Admin Pannel</p>
+        <div class="m-4 p-4">
+          <%= link_to "Create New Competition", new_admin_competition_path,
+              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+          <%= link_to "View all competitions", admin_competitions_path,
+              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+        </div>
+      </div>
     <% end %>
 
     <%= link_to "Edit Profile", edit_user_registration_path,
         class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-
+<hr>
       <div>
-        <%= link_to "My teams", teams_path %>
-        <%= link_to "My competitions", competitions_path %>
+        <%= link_to "My teams", teams_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+        <%= link_to "My competitions", competitions_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"  %>
 
-
+<hr>
         <p>
-          <%= link_to "Edit Profile", edit_user_registration_path %> |
-          <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
+          <%= link_to "Edit Profile", edit_user_registration_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+          <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-rose-400 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-500" %>
         </p>
       </div>
 
-      <p>
-        <%= link_to "Sign Up", new_user_registration_path %> |
-        <%= link_to "Log In", new_user_session_path %>
-      </p>
-
   </div>
 </div>
-
-<% if user_signed_in? %>
-  <p>Signed in as <%= current_user.email %></p>
-  <p>
-    <%= link_to "Edit Profile", edit_user_registration_path %> |
-    <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete } %>
-  </p>
-<% else %>
-  <p>
-    <%= link_to "Sign Up", new_user_registration_path %> |
-    <%= link_to "Log In", new_user_session_path %>
-  </p>
-<% end %>
-
-<h2> NATHANS OLD VIEW </h2>
-<% if current_user&.is_admin? %>
-  <h1>Welcome Admin!</h1>
-  <%= link_to "Admin competitions", admin_competitions_path %>
-<% else %>
-  <h1>Welcome to LeaguePal!</h1>
-<% end %>
-
-<%= link_to "All competitions", competitions_path %>
-
-<%= link_to "Create New Competition", new_admin_competition_path if current_user&.is_admin? %>
-
-<% if user_signed_in? && current_user.next_game %>
-  <div>
-    <div class="flex justify-center">
-      <p class="text-lg font-bold">Next Match</p>
-    </div>
-    <div class="flex justify-center">
-      <%= link_to "View Game", game_path(current_user.next_game.id) %>
-    </div>
-    <div>
-      <%= render "shared/matchcard", game: current_user.next_game %>
-    </div>
-  </div>
-<% end %>

@@ -36,7 +36,11 @@
 
       <!-- Home Team -->
       <div class="flex flex-col items-center gap-2">
-        <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+        <% if team_1.respond_to?(:logo) && team_1.logo.attached? %>
+          <%= image_tag team_1.logo, width: 60, style: "border-radius:8px;" %>
+        <% else %>
+          <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+        <% end %>
         <span class="text-sm font-medium text-neutral-900 dark:text-white">
           <%= team_1.respond_to?(:name) ? team_1.name : (team_1.presence || "TBD") %>
         </span>
@@ -47,8 +51,11 @@
 
       <!-- Away Team / BYE -->
       <div class="flex flex-col items-center gap-2">
-        <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+         <% if team_2.respond_to?(:logo) && team_2.logo.attached? %>
+          <%= image_tag team_2.logo, width: 60, style: "border-radius:8px;" %>
+        <% else %>
+          <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+        <% end %>
           <% if bye_game %>
             BYE
           <% else %>
