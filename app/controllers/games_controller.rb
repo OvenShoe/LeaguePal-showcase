@@ -5,6 +5,7 @@ class GamesController < ApplicationController
 
   # GET /games or /games.json
   def index
+    @competition = Competition.find(params[:competition_id])
     @games = Game.all
   end
 
