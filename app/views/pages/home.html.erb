@@ -9,10 +9,15 @@
 <div class="mt-5 mx-auto w-full max-w-sm flex flex-col">
 
     <% if current_user&.admin? %>
-      <%= link_to "Create New Competition", new_admin_competition_path,
-          class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-    <%= link_to "View all competitions", competitions_path,
-          class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+      <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+        <p class="text-xl text-center">Admin Pannel</p>
+        <div class="m-4 p-4">
+          <%= link_to "Create New Competition", new_admin_competition_path,
+              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+          <%= link_to "View all competitions", admin_competitions_path,
+              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+        </div>
+      </div>
     <% end %>
 
     <%= link_to "Edit Profile", edit_user_registration_path,

@@ -1,31 +1,73 @@
-<% content_for :title, "Games" %>
-
-<div class="w-full">
+<div class="container w-full mx-auto m-8">
+  
+  <h2 class="text=5xl">POOP</h2>
+  
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
+  <h1 class="text-4xl font-bold tracking-tight text-gray-900 font-barlow text-center"><%= @competition.name %></h1>
 
   <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Games</h1>
-    <%= link_to "New game", new_game_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <h1 class="font-bold text-2xl">Games</h1>
+    <%= link_to "Back to competition", competition_path(@competition), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4"%>
+      
+     <% if current_user.is_admin? %>
+        <%= link_to "Edit rounds", admin_competition_path(@competition), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4" %>
+      <% end %>
   </div>
+<%# Iterate over every round with games %>
 
-  <div id="games" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @games.any? %>
-      <% @games.each do |game| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render game %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", game, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <% if current_user.is_admin? %>
-              <%= link_to "Edit", edit_game_path(game), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-              <%= button_to "Destroy", game, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+<% if @competition.scaffold_generated? %>
+      <hr class="my-6 border-gray-200">
+      <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4 text-center">Rounds</h2>
+      <% round_count = 1 %>
+      <% @competition.rounds.order(:id).each do |round| %>
+        <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+          <div class="flex items-center bg-gray-50 px-4 py-3 border-b border-gray-200">
+            <div class="flex-1 text-left">
+              <h3 class="text-sm font-semibold text-gray-900">Round <%= round_count %></h3>
+              <% if round.name.present? %>
+                <p class="text-sm text-gray-500"><%= round.name %></p>
+              <% end %>
+            </div>
+          </div>
+          <div class="divide-y divide-gray-100">
+            <% round.games.each do |game| %>
+              <div class="flex items-center px-4 py-3">
+                <!-- Left: Empty for spacing/alignment -->
+                <div class="flex-1"></div>
+                <!-- Center: Teams -->
+                <div class="flex-2 flex flex-col items-center w-full">
+                  <div class="flex items-center justify-center w-full">
+                    <span class="flex items-center mr-4">
+                      <% if game.team_1&.logo&.attached? %>
+                        <%= image_tag(game.team_1.logo, width: 40, style: "border-radius:8px; margin-right:6px;") %>
+                      <% else %>
+                        <span style="display:inline-block; width:40px; height:40px; border-radius:50%; background:#e5e7eb; margin-right:6px;"></span>
+                      <% end %>
+                      <span class="font-medium"><%= game.team_1&.name || "TBD" %></span>
+                    </span>
+                    <span class="m-4 text-gray-400">vs</span>
+                    <span class="flex items-center ml-4">
+                      <span class="font-medium"><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></span>
+                      <% if game.team_2&.logo&.attached? %>
+                        <%= image_tag(game.team_2.logo, width: 40, style: "border-radius:8px; margin-left:6px;") %>
+                      <% else %>
+                        <span style="display:inline-block; width:40px; height:40px; border-radius:50%; background:#e5e7eb; margin-left:6px;"></span>
+                      <% end %>
+                    </span>
+                  </div>
+                </div>
+                <!-- Right: View game button -->
+                <div class="flex-1 flex justify-end">
+                  <%= link_to "View game", game_path(game),
+                      class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+                </div>
+              </div>
             <% end %>
           </div>
         </div>
+        <% round_count += 1 %>
       <% end %>
-    <% else %>
-      <p class="text-center my-10">No games found.</p>
     <% end %>
-  </div>
 </div>
