@@ -6,16 +6,16 @@
         <table class="w-full">
           <thead class="bg-neutral-100">
             <tr class="*:py-3 *:text-left *:[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)]">
-              <th scope="col" class="pl-6 pr-3 text-sm font-semibold text-neutral-900">Pos</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">Team</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">W</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">L</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">D</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">PF</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">PA</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">Pts</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">L5</th>
-              <th scope="col" class="pl-3 pr-6 text-sm font-semibold text-neutral-900">Played</th>
+              <th scope="col" class="pl-3 sm:pl-6 pr-1 sm:pr-3 text-xs sm:text-sm font-semibold text-neutral-900">Pos</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">Team</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">W</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">L</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">D</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">PF</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">PA</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">Pts</th>
+              <th scope="col" class="px-1 sm:px-3 text-xs sm:text-sm font-semibold text-neutral-900">L5</th>
+              <th scope="col" class="pl-1 sm:pl-3 pr-3 sm:pr-6 text-xs sm:text-sm font-semibold text-neutral-900">Played</th>
             </tr>
           </thead>
           <tbody class="*:*:py-4">
@@ -27,22 +27,22 @@
             ] } %>
             <% sorted_teams.each_with_index do |team, idx| %>
               <tr class="[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)]">
-                <td class="pl-6 pr-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-900' %>"><%= idx + 1 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= link_to team.name, team_path(team) %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.wins || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.losses || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.draws || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.points_for || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.points_against || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.wins.to_i * 3 + team.draws.to_i %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>">
+                <td class="pl-3 sm:pl-6 pr-1 sm:pr-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-900 text-xs sm:text-sm' %>"><%= idx + 1 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= link_to team.name, team_path(team) %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.wins || 0 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.losses || 0 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.draws || 0 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.points_for || 0 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.points_against || 0 %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.wins.to_i * 3 + team.draws.to_i %></td>
+                <td class="px-1 sm:px-3 text-xs sm:text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>">
                   <% if team.form.present? %>
                     <%= team.form.join(' ') %>
                   <% else %>
                     &ndash;
                   <% end %>
                 </td>
-                <td class="pl-3 pr-6 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.games_played || 0 %></td>
+                <td class="pl-1 sm:pl-3 pr-3 sm:pr-6 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 text-xs sm:text-sm' : 'text-neutral-500 text-xs sm:text-sm' %>"><%= team.games_played || 0 %></td>
               </tr>
             <% end %>
           </tbody>

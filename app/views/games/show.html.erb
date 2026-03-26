@@ -1,6 +1,6 @@
 <% content_for :title, "Showing game" %>
 
-<div class="min-h-screen flex items-start justify-center pt-16 p-8 pb-32">
+<div class="min-h-screen flex items-start justify-center p-4 pt-8 pb-28 sm:p-8 sm:pt-16 sm:pb-32">
   <div class="w-full max-w-2xl">
 
     <% if notice.present? %>
@@ -72,10 +72,10 @@
 </div>
 
 <%# Fixed bottom nav bar %>
-<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-6 py-4">
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
   <div class="mx-auto max-w-2xl">
     <% if current_user.admin? %>
-      <div class="flex flex-col gap-2 sm:flex-row sm:items- justify-center">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
         <% unless @game.complete? %>
           <%= button_to "End game", complete_game_game_path(@game),
               method: :patch,
