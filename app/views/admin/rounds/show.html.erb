@@ -1,116 +1,161 @@
-<h2>views/admin/rounds/show.html.erb</h2>
+<div class="min-h-screen flex items-start justify-center pt-16 p-8 pb-32">
+  <div class="w-full max-w-2xl">
 
-<%# Edit round:  %>
-<%# Option to give ceremonial name  ✅%>
-<%# Option to delete round  %>
-<%# Form to edit each game ✅ %>
-<%# Option to delete  game %>
+    <h1 class="text-2xl font-bold text-gray-900 font-barlow text-center mb-6">
+      Edit round
+    </h1>
 
-<%= simple_form_for([:admin, @round], local: true) do |f| %>
-    <%= f.error_notification %>
-    <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
-
-    <div class="form-inputs">
-        <%= f.input :name, label: "round Name i.e Semi Final 1" %>
+    <%# Update round name %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+      <p class="text-xs text-gray-400 uppercase tracking-wider mb-4">Round name</p>
+      <%= simple_form_for([:admin, @round], local: true) do |f| %>
+        <%= f.error_notification wrapper_html: { class: "rounded-2xl bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-700 mb-4" } %>
+        <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+        <div class="space-y-4">
+          <%= f.input :name,
+              label: "Round name (e.g. Semi Final 1)",
+              label_html: { class: "block text-sm font-medium text-gray-900" },
+              input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+              wrapper_html: { class: "space-y-1" } %>
+          <%= f.button :submit, "Update round name",
+              class: "flex w-full justify-center rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer transition-colors" %>
+        </div>
+      <% end %>
     </div>
 
-    <div class="form-actions">
-        <%= f.button :submit, "Update Round Name" %>
-    </div>
-<% end %>
-
-<%= simple_form_for(@round, url: admin_round_path(@round), method: :delete, local: true) do |f| %>
-  <%= f.button :submit, "Delete Round",
-    data: { turbo_confirm: "Delete this round?" },
-    style: "
-      display:block;
-      margin-top:4px;
-      background:#e53e3e;
-      color:white;
-      border:none;
-      border-radius:4px;
-      padding:3px 10px;
-      cursor:pointer;
-      font-size:12px;
-    " %>
-<% end %>
-
-<% @games.order(:id).each do |game| %>
-  <%# CONTENT DIV %>
-  <div class="container">
-    <div>
-      <strong><%= game.team_1&.name || "TBD" %></strong>
-      vs
-      <strong><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></strong>
+    <%# Delete round %>
+    <div class="bg-white rounded-2xl border border-red-100 p-6 mb-6">
+      <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Danger zone</p>
+      <p class="text-sm text-gray-500 mb-4">Permanently delete this round and all its games.</p>
+      <%= simple_form_for(@round, url: admin_round_path(@round), method: :delete, local: true) do |f| %>
+        <%= f.button :submit, "Delete round",
+            class: "flex w-full justify-center rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600 cursor-pointer transition-colors",
+            data: { turbo_confirm: "Delete this round?" } %>
+      <% end %>
     </div>
 
-    <%= simple_form_for(game, url: game_path(game), method: :patch, local: true) do |f| %>
-        <%= f.error_notification %>
+    <%# Games %>
+    <h2 class="text-sm font-semibold text-gray-900 font-barlow mb-4">Games</h2>
 
-        <div class="form-inputs">
-            <%= f.input :team_1_id, collection: @teams.map { |team| [team.name, team.id] },
-                        include_blank: "No team assigned", 
-                        label: "Team 1" %>
-            <%= f.input :team_2_id, collection: @teams.map { |team| [team.name, team.id] }, 
-                        include_blank: "No team assigned",
-                        label: "Team 2" %>
-            <%= f.input :location, label: "Location" %>
-                        <div>
-            <%= f.label :start_time, "Start Time" %>
-            <div class="flex gap-2 items-center">
-              <div class="p-4">
-                <%= f.time_select :start_time, minute_step: 5, ampm: true, ignore_date: true %>
-              </div>
-              <div class ="p-4">
-                <%= f.date_select :start_time, order: [ :day, :month, :year ] %>
+    <% @games.order(:id).each do |game| %>
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
+
+        <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+          <p class="text-sm font-semibold text-gray-900">
+            <%= game.team_1&.name || "TBD" %>
+            <span class="text-gray-300 font-normal mx-2">vs</span>
+            <%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %>
+          </p>
+        </div>
+
+        <%= simple_form_for(game, url: game_path(game), method: :patch, local: true) do |f| %>
+          <%= f.error_notification wrapper_html: { class: "rounded-2xl bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-700 mb-4" } %>
+
+          <div class="space-y-4">
+            <%= f.input :team_1_id,
+                collection: @teams.map { |team| [team.name, team.id] },
+                include_blank: "No team assigned",
+                label: "Team 1",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :team_2_id,
+                collection: @teams.map { |team| [team.name, team.id] },
+                include_blank: "No team assigned",
+                label: "Team 2",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :location,
+                label: "Location",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+
+            <div class="space-y-1">
+              <%= f.label :start_time, "Start time", class: "block text-sm font-medium text-gray-900" %>
+              <div class="flex flex-wrap gap-3">
+                <div class="flex gap-1 items-center">
+                  <%= f.time_select :start_time, minute_step: 5, ampm: true, ignore_date: true,
+                      class: "rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" %>
+                </div>
+                <div class="flex gap-1 items-center">
+                  <%= f.date_select :start_time, order: [:day, :month, :year],
+                      class: "rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" %>
+                </div>
               </div>
             </div>
-        </div>
-        </div>
-        <div class="form-actions flex justify-between">
-            <%= f.button :submit, "Update Game" %>
+          </div>
+
+          <div class="flex gap-3 mt-6">
+            <%= f.button :submit, "Update game",
+                class: "flex-1 justify-center rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer transition-colors" %>
             <%= f.button :submit, "Delete game",
-          name: "_method",
-          value: "delete",
-          formmethod: "post",
-          formaction: game_path(game),
-          data: { turbo_confirm: "Delete this game?" },
-          style: "
-            display:block;
-            margin-top:4px;
-            background:#e53e3e;
-            color:white;
-            border:none;
-            border-radius:4px;
-            padding:3px 10px;
-            cursor:pointer;
-            font-size:12px;
-          " %>
-        </div>
+                name: "_method",
+                value: "delete",
+                formmethod: "post",
+                formaction: game_path(game),
+                class: "flex-1 justify-center rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600 cursor-pointer transition-colors",
+                data: { turbo_confirm: "Delete this game?" } %>
+          </div>
+
+        <% end %>
+      </div>
     <% end %>
 
-    <%= link_to "Back", admin_competitions_path %>
-  </div>
-<% end %>
+    <%# Failsafe — create game if games have been deleted %>
+    <% if @games_count < (@teams_count / 2) %>
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-4">Create game</p>
+        <%= simple_form_for(Game.new(round: @round), url: games_path, method: :post, local: true) do |f| %>
+          <div class="space-y-4">
+            <%= f.input :team_1_id,
+                collection: @teams.map { |team| [team.name, team.id] },
+                include_blank: true,
+                label: "Team 1",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :team_2_id,
+                collection: @teams.map { |team| [team.name, team.id] },
+                include_blank: true,
+                label: "Team 2",
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
+            <%= f.input :location,
+                label_html: { class: "block text-sm font-medium text-gray-900" },
+                input_html: { class: "block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 sm:text-sm" },
+                wrapper_html: { class: "space-y-1" } %>
 
-<%# Fail safe is games are nuked %>
-<% if @games_count < ( @teams_count/2 )%>
-  <div class="mt-10">
-    <h2>Create Game:</h2>
-    <%= simple_form_for(Game.new(round: @round), url: games_path, method: :post, local: true) do |f| %>
-      <%= f.input :team_1_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
-      <%= f.input :team_2_id, collection: @teams.map { |team| [team.name, team.id] }, include_blank: true %>
-      <%= f.input :location %>
-        <div class="flex gap-2 items-center">
-          <div class="p-4">
-            <%= f.time_select :start_time, ampm: true, ignore_date: true, minute_step: 5 %>
+            <div class="space-y-1">
+              <%= f.label :start_time, "Start time", class: "block text-sm font-medium text-gray-900" %>
+              <div class="flex flex-wrap gap-3">
+                <div class="flex gap-1 items-center">
+                  <%= f.time_select :start_time, ampm: true, ignore_date: true, minute_step: 5 %>
+                </div>
+                <div class="flex gap-1 items-center">
+                  <%= f.date_select :start_time, order: [:day, :month, :year] %>
+                </div>
+              </div>
+            </div>
+
+            <%= f.hidden_field :round_id, value: @round.id %>
+            <%= f.button :submit, "Create game",
+                class: "flex w-full justify-center rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 cursor-pointer transition-colors" %>
           </div>
-          <div class ="p-4">
-            <%= f.date_select :start_time, order: [ :day, :month, :year ] %>
-          </div>
-        </div>
-      <%= f.hidden_field :round_id, value: @round.id %>
-      <%= f.button :submit, "Create Game" %>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<%# Fixed bottom nav bar %>
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-6 py-4">
+  <div class="mx-auto max-w-2xl flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+    <%= link_to admin_competitions_path, class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors" do %>
+      Back to competitions
     <% end %>
   </div>
-<% end %>
+</div>
