@@ -16,8 +16,8 @@
         Competition games
         <span class="text-gray-300">›</span>
       <% end %>
-      <% if @user_teams.present? %>
-        <% @user_teams.each do |team| %>
+      <% if current_user.teams.present? %>
+        <% current_user.teams.each do |team| %>
           <%= link_to team_path(team), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
             My team — <%= team.name %>
             <span class="text-gray-300">›</span>
