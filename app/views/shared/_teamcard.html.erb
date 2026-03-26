@@ -1,51 +1,51 @@
 <!-- filepath: app/views/shared/_teamcard.html.erb -->
 <% team = local_assigns[:team] || @team %>
 
-<div class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-lg overflow-hidden drop-shadow-xl">
+<div class="bg-white border border-black/10 rounded-xl shadow-lg overflow-hidden drop-shadow-xl">
   <div class="px-6 py-6 flex flex-col items-center text-center gap-5">
     <!-- Team Name & Logo -->
     <div class="flex flex-col items-center gap-2">
       <% if team.logo.attached? %>
         <%= image_tag team.logo, class: "w-16 h-16 rounded-full object-cover border-2 border-blue-400 shadow" %>
       <% else %>
-        <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center text-2xl text-neutral-400">🏆</div>
+        <div class="w-16 h-16 rounded-full bg-neutral-200 flex items-center justify-center text-2xl text-neutral-400">🏆</div>
       <% end %>
-      <span class="text-lg font-bold text-neutral-900 dark:text-white tracking-wide">
+      <span class="text-lg font-bold text-neutral-900 tracking-wide">
         <%= team.name.presence || "Unnamed Team" %>
       </span>
     </div>
 
     <!-- Stats Card -->
-    <div class="w-full bg-neutral-50 dark:bg-neutral-900 rounded-lg shadow-inner py-4 px-2 mt-2 mb-2">
+    <div class="w-full bg-neutral-50 rounded-lg shadow-inner py-4 px-2 mt-2 mb-2">
       <div class="grid grid-cols-4 gap-2">
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">Wins</span>
+          <span class="text-xs text-neutral-500">Wins</span>
           <span class="text-lg font-bold text-green-600"><%= team.wins %></span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">Draws</span>
+          <span class="text-xs text-neutral-500">Draws</span>
           <span class="text-lg font-bold text-yellow-600"><%= team.draws %></span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">Losses</span>
+          <span class="text-xs text-neutral-500">Losses</span>
           <span class="text-lg font-bold text-red-600"><%= team.losses %></span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">Points</span>
+          <span class="text-xs text-neutral-500">Points</span>
           <span class="text-lg font-bold text-blue-600"><%= team.competition_points %></span>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-2 mt-4 border-t border-neutral-200 dark:border-neutral-700 pt-3">
+      <div class="grid grid-cols-3 gap-2 mt-4 border-t border-neutral-200 pt-3">
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">GF</span>
+          <span class="text-xs text-neutral-500">GF</span>
           <span class="text-base font-semibold"><%= team.points_for %></span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">GA</span>
+          <span class="text-xs text-neutral-500">GA</span>
           <span class="text-base font-semibold"><%= team.points_against %></span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-xs text-neutral-500 dark:text-neutral-400">Played</span>
+          <span class="text-xs text-neutral-500">Played</span>
           <span class="text-base font-semibold"><%= team.games_played %></span>
         </div>
       </div>

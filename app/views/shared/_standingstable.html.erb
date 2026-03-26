@@ -1,21 +1,21 @@
 
 <% if defined?(competition) && competition.present? && competition.respond_to?(:teams) && competition.teams.any? %>
   <div class="w-full mx-auto my-8">
-    <div class="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/10 shadow-xs overflow-hidden">
+    <div class="bg-white rounded-xl border border-black/10 shadow-xs overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full">
-          <thead class="bg-neutral-100 dark:bg-neutral-800">
-            <tr class="*:py-3 *:text-left *:[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)] dark:*:[box-shadow:inset_0_-1px_0_0_rgb(46_46_46)]">
-              <th scope="col" class="pl-6 pr-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Pos</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Team</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">W</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">L</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">D</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">PF</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">PA</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Pts</th>
-              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900 dark:text-neutral-50">L5</th>
-              <th scope="col" class="pl-3 pr-6 text-sm font-semibold text-neutral-900 dark:text-neutral-50">Played</th>
+          <thead class="bg-neutral-100">
+            <tr class="*:py-3 *:text-left *:[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)]">
+              <th scope="col" class="pl-6 pr-3 text-sm font-semibold text-neutral-900">Pos</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">Team</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">W</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">L</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">D</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">PF</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">PA</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">Pts</th>
+              <th scope="col" class="px-3 text-sm font-semibold text-neutral-900">L5</th>
+              <th scope="col" class="pl-3 pr-6 text-sm font-semibold text-neutral-900">Played</th>
             </tr>
           </thead>
           <tbody class="*:*:py-4">
@@ -26,23 +26,23 @@
               -team.wins.to_i
             ] } %>
             <% sorted_teams.each_with_index do |team, idx| %>
-              <tr class="[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)] dark:[box-shadow:inset_0_-1px_0_0_rgb(46_46_46)]">
-                <td class="pl-6 pr-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-900 dark:text-neutral-100' %>"><%= idx + 1 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= link_to team.name, team_path(team) %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.wins || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.losses || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.draws || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.points_for || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.points_against || 0 %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.wins.to_i * 3 + team.draws.to_i %></td>
-                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>">
+              <tr class="[box-shadow:inset_0_-1px_0_0_rgb(229_229_229)]">
+                <td class="pl-6 pr-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-900' %>"><%= idx + 1 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= link_to team.name, team_path(team) %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.wins || 0 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.losses || 0 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.draws || 0 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.points_for || 0 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.points_against || 0 %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.wins.to_i * 3 + team.draws.to_i %></td>
+                <td class="px-3 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>">
                   <% if team.form.present? %>
                     <%= team.form.join(' ') %>
                   <% else %>
                     &ndash;
                   <% end %>
                 </td>
-                <td class="pl-3 pr-6 text-sm <%= idx == 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400' %>"><%= team.games_played || 0 %></td>
+                <td class="pl-3 pr-6 text-sm <%= idx == 0 ? 'font-bold text-neutral-900' : 'text-neutral-500' %>"><%= team.games_played || 0 %></td>
               </tr>
             <% end %>
           </tbody>
@@ -52,8 +52,8 @@
   </div>
 <% else %>
   <div class="w-full mx-auto my-8">
-    <div class="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/10 shadow-xs overflow-hidden p-6 text-center">
-      <p class="text-neutral-500 dark:text-neutral-400">No competition or teams to display.</p>
+    <div class="bg-white rounded-xl border border-black/10 shadow-xs overflow-hidden p-6 text-center">
+      <p class="text-neutral-500">No competition or teams to display.</p>
     </div>
   </div>
 <% end %>
