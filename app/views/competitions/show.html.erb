@@ -1,71 +1,89 @@
-<div class="container mx-auto px-4 py-8">
-  <nav class="font-barlowlight my-4 p-2">
-    <div class="w-full flex justify-between">
-      <ul class="flex justify-between w-full">
-        <li class="font-bold underline"><%= link_to "My competitions", competitions_path, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4" %></li>
-        <li class="font-bold underline"><%= link_to "Competition Games", competition_games_path(@competition), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4" %></li>
-        <% if @user_teams.present? %>
-          <% @user_teams.each do |team| %>
-            <li class="font-bold underline"><%= link_to "My team", team_path(team) %></li>
+<div class="min-h-screen flex items-start justify-center pt-16 p-8 pb-32">
+  <div class="w-full max-w-2xl">
+
+    <h1 class="text-2xl font-bold text-gray-900 font-barlow text-center mb-6">
+      <%= @competition.name %>
+    </h1>
+
+    <%# Nav card %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+      <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Navigation</p>
+      <%= link_to competitions_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+        My competitions
+        <span class="text-gray-300">›</span>
+      <% end %>
+      <%= link_to competition_games_path(@competition), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+        Competition games
+        <span class="text-gray-300">›</span>
+      <% end %>
+      <% if @user_teams.present? %>
+        <% @user_teams.each do |team| %>
+          <%= link_to team_path(team), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+            My team — <%= team.name %>
+            <span class="text-gray-300">›</span>
           <% end %>
         <% end %>
-      </ul>
+      <% end %>
     </div>
-  </nav>
 
-  <div class="container mx-auto px-4 py-4">
-
-  <h1 class="font-bold text-4xl mb-4 text-center"><%= @competition.name %></h1>
-
-  <div class="mb-6">
-    <% if @competition.scaffold_generated? && @next_game.present? %>
-      <div>
-          <div class="flex justify-center">
-            <p class="text-lg font-bold">Next Match</p>
-          </div>
-          <div class="flex justify-center">
-            <%= link_to "View Game", game_path(@next_game) %>
-          </div>
-          <div>
-            <%= render "shared/matchcard", game: @next_game %>
-          </div>
-          <div>
-            <%= render "shared/statscard", top_stats: @competition.top_team_per_stat, title: "Top Team Stats", show_user: false %>
-          </div>
-        <div>
-    <% else %>
-        <div>
-          <div class="flex justify-center">
-            <p class="text-lg font-bold">Next Match</p>
-          </div>
-          <div class="flex justify-center">
-            <p class="text-gray-500">No upcoming matches available.</p>
-          </div>
-          <div>
+    <%# Next match %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+      <h2 class="text-sm font-semibold text-gray-900 font-barlow mb-4">Next match</h2>
+      <% if @competition.scaffold_generated? && @next_game.present? %>
+        <%= render "shared/matchcard", game: @next_game %>
+        <div class="mt-4">
+          <%= link_to game_path(@next_game), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 border-t border-gray-100 transition-colors" do %>
+            View game
+            <span class="text-gray-300">›</span>
+          <% end %>
         </div>
-    <% end %>
-    
+        <div class="mt-4">
+          <%= render "shared/statscard", top_stats: @competition.top_team_per_stat, title: "Top Team Stats", show_user: false %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-400">No upcoming matches available.</p>
+      <% end %>
     </div>
-    <h2 class="text-2xl mt-4 text-center">Competition Standings</h2>
-    <%= render "shared/standingstable", competition: @competition %>
 
-  <%# stats card %>
-  <%= render "shared/statscard", top_stats: @top_stats, title: "Top Player Stats", show_user: true %>
-</div>
+    <%# Standings %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+      <h2 class="text-sm font-semibold text-gray-900 font-barlow mb-4">Competition standings</h2>
+      <%= render "shared/standingstable", competition: @competition %>
+    </div>
 
+    <%# Top player stats %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+      <%= render "shared/statscard", top_stats: @top_stats, title: "Top Player Stats", show_user: true %>
+    </div>
 
-
-  <div class="flex flex-col items-center text-center w-full">
-    <% if current_user&.is_admin? %>
-      <div class="mb-8 flex flex-col items-center text-center w-full">
-        <h2 class="text-2xl font-semibold mb-4">Admin Actions</h2>
-        <%= link_to "Edit Competition", edit_admin_competition_path(@competition), class: "mb-2" %>
-        <%= link_to "Manage Competition Invites", admin_competition_path(@competition), class: "text-blue-600 hover:underline mb-2" %>
+    <%# Admin actions %>
+    <% if current_user&.admin? %>
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Admin</p>
+        <%= link_to edit_admin_competition_path(@competition), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          Edit competition
+          <span class="text-gray-300">›</span>
+        <% end %>
+        <%= link_to admin_competition_path(@competition), class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          Manage competition invites
+          <span class="text-gray-300">›</span>
+        <% end %>
       </div>
     <% end %>
-    <div class="flex flex-col items-center text-center w-full">
-      <%= link_to "To Admin Competitions", admin_competitions_path, class: 'mt-10 mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded' if current_user.is_admin? %>
-      <%= link_to "Back to Competitions", competitions_path, class: 'mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded' %>
-    </div>
+
+  </div>
+</div>
+
+<%# Fixed bottom nav bar %>
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-6 py-4">
+  <div class="mx-auto max-w-2xl flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+    <% if current_user&.admin? %>
+      <%= link_to admin_competitions_path, class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors" do %>
+        Admin competitions
+      <% end %>
+    <% end %>
+    <%= link_to competitions_path, class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors" do %>
+      Back to competitions
+    <% end %>
   </div>
 </div>
