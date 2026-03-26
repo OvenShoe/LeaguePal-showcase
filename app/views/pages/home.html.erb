@@ -1,40 +1,71 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-1 lg:px-8">
-  <div class="mx-auto w-full max-w-sm">
-    <h1 class="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900 font-barlow">
-      Welcome, <%= current_user.first_name %>!
-    </h1>
-    <p class="mt-2 text-center text-sm text-gray-500">What would you like to do today?</p>
-  </div>
+<div class="min-h-screen flex items-start justify-center p-8">
+  <div class="w-full max-w-md">
 
-<div class="mt-5 mx-auto w-full max-w-sm flex flex-col">
-    <%= link_to "View all competitions", competitions_path,
-        class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+    <% if user_signed_in? %>
 
-    <% if current_user&.admin? %>
-      <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-        <p class="text-xl text-center">Admin Pannel</p>
-        <div class="m-4 p-4">
-          <%= link_to "Create New Competition", new_admin_competition_path,
-              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-          <%= link_to "View all competitions", admin_competitions_path,
-              class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
+      <h1 class="text-2xl font-bold text-gray-900 mb-1 text-center font-barlow">
+        Welcome, <%= current_user.first_name %>!
+      </h1>
+      <p class="text-sm text-gray-400 text-center mb-6">What would you like to do today?</p>
+
+      <div class="bg-white rounded-2xl border border-gray-200 w-full p-8 space-y-2">
+
+        <%# Admin section - only for admins %>
+        <% if current_user&.admin? %>
+          <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Admin</p>
+          <%= link_to admin_competitions_path, class: "flex items-start pt-4 justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+            Admin competitions
+            <span class="text-gray-300">›</span>
+          <% end %>
+          <%= link_to new_admin_competition_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+            Create new competition
+            <span class="text-gray-300">›</span>
+          <% end %>
+          <div class="border-t border-gray-100 my-4"></div>
+        <% end %>
+
+        <%# General section %>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">General</p>
+        <%= link_to competitions_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          All competitions
+          <span class="text-gray-300">›</span>
+        <% end %>
+        <%= link_to teams_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          My teams
+          <span class="text-gray-300">›</span>
+        <% end %>
+        <%= link_to competitions_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          My competitions
+          <span class="text-gray-300">›</span>
+        <% end %>
+
+        <div class="border-t border-gray-100 my-4"></div>
+
+        <%# Account section %>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Account</p>
+        <%= link_to edit_user_registration_path, class: "flex items-center justify-between w-full text-sm font-medium text-gray-900 hover:text-emerald-700 py-3 transition-colors" do %>
+          Edit profile
+          <span class="text-gray-300">›</span>
+        <% end %>
+        <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex items-center justify-between w-full text-sm font-medium text-red-500 hover:text-red-700 py-3 transition-colors" do %>
+          Log out
+          <span class="text-red-300">›</span>
+        <% end %>
+
+      </div>
+
+    <% else %>
+
+      <div class="bg-white rounded-2xl border border-gray-200 w-full p-8 text-center">
+        <p class="text-sm font-medium text-gray-900 mb-4">Welcome to League Pal</p>
+        <div class="flex items-center justify-center gap-3 text-xs text-gray-400">
+          <%= link_to "Sign up", new_user_registration_path, class: "hover:text-gray-700 transition-colors" %>
+          <span>·</span>
+          <%= link_to "Log in", new_user_session_path, class: "hover:text-gray-700 transition-colors" %>
         </div>
       </div>
+
     <% end %>
-
-    <%= link_to "Edit Profile", edit_user_registration_path,
-        class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-<hr>
-      <div>
-        <%= link_to "My teams", teams_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-        <%= link_to "My competitions", competitions_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"  %>
-
-<hr>
-        <p>
-          <%= link_to "Edit Profile", edit_user_registration_path, class: "mb-4 mt-4 flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
-          <%= link_to "Log Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "mb-4 flex w-full justify-center rounded-md border border-gray-300 bg-rose-400 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-500" %>
-        </p>
-      </div>
 
   </div>
 </div>
