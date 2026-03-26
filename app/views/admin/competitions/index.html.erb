@@ -1,5 +1,5 @@
 <div class="container mx-auto px-4 py-4">
-  <h2 class="text-center text-5xl font-bold mb-4"> All Competitions</h2>
+  <h2 class="text-center text-2xl font-bold mb-4"> All Competitions</h2>
   <% if @competitions.exists? %>
     <div>
       <%= render partial: "shared/comp_card", locals: { competitions: @competitions } %>
