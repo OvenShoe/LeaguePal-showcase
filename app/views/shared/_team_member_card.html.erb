@@ -1,11 +1,11 @@
 <% if team_members.present? %>
-  <div class="flex flex-wrap gap-4 justify-center items-start w-full">
+  <div class="flex flex-wrap gap-2 sm:gap-4 justify-center items-start w-full">
     <% team_members.each do |member| %>
-      <div class="flex flex-col items-center bg-white shadow rounded-xl p-4 w-36">
+      <div class="flex flex-col items-center bg-white shadow rounded-xl p-3 sm:p-4 w-28 sm:w-36">
         <% if member.respond_to?(:avatar) && member.avatar.attached? %>
-          <%= image_tag member.avatar, width: 64, height: 64, class: "rounded-full object-cover border-2 border-neutral-200 shadow-sm mb-2" %>
+          <%= image_tag member.avatar, class: "w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-neutral-200 shadow-sm mb-2" %>
         <% else %>
-          <div class="w-16 h-16 rounded-full bg-neutral-200 flex items-center justify-center mb-2">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-neutral-200 flex items-center justify-center mb-2">
             <svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9 9 0 1112 21a8.963 8.963 0 01-6.879-3.196z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
           </div>
         <% end %>

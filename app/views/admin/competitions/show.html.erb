@@ -1,26 +1,26 @@
-<div class="flex min-h-full flex-col px-6 py-12 lg:px-8">
+<div class="min-h-full flex flex-col px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
   <div class="mx-auto w-full max-w-2xl">
 
     <%# Admin and Public Links Header %>
-    <div class="mt-8 mb-10 px-8 py-16">
-      <h1 class="text-2xl font-bold tracking-tight text-gray-900 font-barlow text-center mb-8"><%= @competition.name %></h1>
-      <div class="mt-3 rounded border border-grey-500 px-10 py-12">
-        <div class="mb-12">
-          <p class="text-center text-4xl mb-12">Admin Paths:</p>
-          <div class="flex justify-between gap-8">
+    <div class="mb-8">
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 font-barlow text-center mb-6"><%= @competition.name %></h1>
+      <div class="rounded border border-gray-200 p-4 sm:p-6">
+        <div class="mb-6">
+          <p class="text-center text-lg sm:text-xl font-semibold mb-4">Admin</p>
+          <div class="flex flex-col sm:flex-row gap-3">
             <%= link_to "Back to Competitions", admin_competitions_path,
-                class: "rounded-md border border-gray-300 bg-white px-6 py-4 text-base font-semibold text-gray-900 hover:bg-gray-50" %>
+                class: "flex-1 text-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
             <%= link_to "Edit competition", edit_admin_competition_path(@competition),
-                class: "rounded-md border border-gray-300 bg-white px-6 py-4 text-base font-semibold text-gray-900 hover:bg-gray-50" %>
+                class: "flex-1 text-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
           </div>
         </div>
         <div>
-          <p class="text-center text-4xl mb-12">Public Paths</p>
-          <div class="flex justify-between gap-8">
+          <p class="text-center text-lg sm:text-xl font-semibold mb-4">Public</p>
+          <div class="flex flex-col sm:flex-row gap-3">
             <%= link_to "Back to competition", competition_path(@competition),
-              class: "rounded-md border border-gray-300 bg-white px-6 py-4 text-base font-semibold text-gray-900 hover:bg-gray-50" %>
+              class: "flex-1 text-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
             <%= link_to "View all competitions", competitions_path,
-                class: "rounded-md border border-gray-300 bg-white px-6 py-4 text-base font-semibold text-gray-900 hover:bg-gray-50" %>
+                class: "flex-1 text-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50" %>
           </div>
         </div>
       </div>
@@ -152,14 +152,14 @@
           </div>
           <div class="divide-y divide-gray-100">
             <% round.games.each do |game| %>
-              <div class="flex items-center justify-between px-4 py-3">
-                <div class="text-sm text-gray-700">
+              <div class="flex items-center justify-between px-4 py-3 gap-2">
+                <div class="text-sm text-gray-700 min-w-0">
                   <span class="font-medium"><%= game.team_1&.name || "TBD" %></span>
-                  <span class="mx-2 text-gray-400">vs</span>
+                  <span class="mx-1 text-gray-400">vs</span>
                   <span class="font-medium"><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></span>
                 </div>
-                <%= link_to "View game", game_path(game),
-                    class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+                <%= link_to "View", game_path(game),
+                    class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500 flex-shrink-0" %>
               </div>
             <% end %>
           </div>
