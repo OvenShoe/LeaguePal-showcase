@@ -14,7 +14,7 @@
 
       <% if @team.jersey.attached? %>
         <div class="mt-4 flex flex-col items-center">
-          <%= image_tag @team.jersey.variant(resize_to_fit: [120, 120]), class: "w-20 h-20 object-cover rounded-xl border border-gray-200" %>
+          <%= image_tag @team.jersey, class: "w-20 h-20 object-cover rounded-xl border border-gray-200" %>
           <p class="text-xs text-gray-400 mt-1">Team jersey</p>
         </div>
       <% end %>
