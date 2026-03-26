@@ -1,73 +1,86 @@
-<div class="container w-full mx-auto m-8">
-  
-  <h2 class="text=5xl">POOP</h2>
-  
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
-  <h1 class="text-4xl font-bold tracking-tight text-gray-900 font-barlow text-center"><%= @competition.name %></h1>
+<div class="min-h-screen flex items-start justify-center pt-16 p-8 pb-32">
+  <div class="w-full max-w-2xl">
 
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-2xl">Games</h1>
-    <%= link_to "Back to competition", competition_path(@competition), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4"%>
-      
-     <% if current_user.is_admin? %>
-        <%= link_to "Edit rounds", admin_competition_path(@competition), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium m-4" %>
-      <% end %>
-  </div>
-<%# Iterate over every round with games %>
+    <% if notice.present? %>
+      <div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-4 text-sm text-emerald-700 mb-6">
+        <%= notice %>
+      </div>
+    <% end %>
 
-<% if @competition.scaffold_generated? %>
-      <hr class="my-6 border-gray-200">
-      <h2 class="text-lg font-bold text-gray-900 font-barlow mb-4 text-center">Rounds</h2>
+    <h1 class="text-2xl font-bold text-gray-900 font-barlow text-center mb-6">
+      <%= @competition.name %>
+    </h1>
+
+    <%# Rounds %>
+    <% if @competition.scaffold_generated? %>
+      <h2 class="text-sm font-semibold text-gray-900 font-barlow mb-4">Rounds</h2>
       <% round_count = 1 %>
       <% @competition.rounds.order(:id).each do |round| %>
-        <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-          <div class="flex items-center bg-gray-50 px-4 py-3 border-b border-gray-200">
-            <div class="flex-1 text-left">
+        <div class="bg-white rounded-2xl border border-gray-200 mb-3 overflow-hidden">
+
+          <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <div>
               <h3 class="text-sm font-semibold text-gray-900">Round <%= round_count %></h3>
               <% if round.name.present? %>
-                <p class="text-sm text-gray-500"><%= round.name %></p>
+                <p class="text-xs text-gray-400 mt-0.5"><%= round.name %></p>
               <% end %>
             </div>
           </div>
+
           <div class="divide-y divide-gray-100">
             <% round.games.each do |game| %>
-              <div class="flex items-center px-4 py-3">
-                <!-- Left: Empty for spacing/alignment -->
-                <div class="flex-1"></div>
-                <!-- Center: Teams -->
-                <div class="flex-2 flex flex-col items-center w-full">
-                  <div class="flex items-center justify-center w-full">
-                    <span class="flex items-center mr-4">
-                      <% if game.team_1&.logo&.attached? %>
-                        <%= image_tag(game.team_1.logo, width: 40, style: "border-radius:8px; margin-right:6px;") %>
-                      <% else %>
-                        <span style="display:inline-block; width:40px; height:40px; border-radius:50%; background:#e5e7eb; margin-right:6px;"></span>
-                      <% end %>
-                      <span class="font-medium"><%= game.team_1&.name || "TBD" %></span>
-                    </span>
-                    <span class="m-4 text-gray-400">vs</span>
-                    <span class="flex items-center ml-4">
-                      <span class="font-medium"><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></span>
-                      <% if game.team_2&.logo&.attached? %>
-                        <%= image_tag(game.team_2.logo, width: 40, style: "border-radius:8px; margin-left:6px;") %>
-                      <% else %>
-                        <span style="display:inline-block; width:40px; height:40px; border-radius:50%; background:#e5e7eb; margin-left:6px;"></span>
-                      <% end %>
-                    </span>
-                  </div>
+              <div class="flex items-center justify-between px-5 py-4">
+
+                <%# Team 1 %>
+                <div class="flex items-center gap-2 flex-1">
+                  <% if game.team_1&.logo&.attached? %>
+                    <%= image_tag game.team_1.logo, class: "w-9 h-9 rounded-lg object-cover border border-gray-200" %>
+                  <% else %>
+                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex-shrink-0"></div>
+                  <% end %>
+                  <span class="text-sm font-medium text-gray-900"><%= game.team_1&.name || "TBD" %></span>
                 </div>
-                <!-- Right: View game button -->
-                <div class="flex-1 flex justify-end">
-                  <%= link_to "View game", game_path(game),
-                      class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+
+                <%# vs %>
+                <span class="text-xs text-gray-300 mx-3">vs</span>
+
+                <%# Team 2 %>
+                <div class="flex items-center gap-2 flex-1 justify-end">
+                  <span class="text-sm font-medium text-gray-900"><%= game.bye? ? "BYE" : (game.team_2&.name || "TBD") %></span>
+                  <% if game.team_2&.logo&.attached? %>
+                    <%= image_tag game.team_2.logo, class: "w-9 h-9 rounded-lg object-cover border border-gray-200" %>
+                  <% else %>
+                    <div class="w-9 h-9 rounded-lg bg-gray-100 flex-shrink-0"></div>
+                  <% end %>
                 </div>
+
+                <%# View game %>
+                <%= link_to game_path(game), class: "ml-4 text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors flex-shrink-0" do %>
+                  View ›
+                <% end %>
+
               </div>
             <% end %>
           </div>
+
         </div>
         <% round_count += 1 %>
       <% end %>
     <% end %>
+
+  </div>
+</div>
+
+<%# Fixed bottom nav bar %>
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-6 py-4">
+  <div class="mx-auto max-w-2xl flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+    <%= link_to competition_path(@competition), class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors" do %>
+      Back to competition
+    <% end %>
+    <% if current_user.admin? %>
+      <%= link_to admin_competition_path(@competition), class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors" do %>
+        Edit rounds
+      <% end %>
+    <% end %>
+  </div>
 </div>
