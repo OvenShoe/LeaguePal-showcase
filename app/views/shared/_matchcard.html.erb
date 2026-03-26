@@ -13,7 +13,7 @@
 <% complete = game&.respond_to?(:complete) ? game.complete : false %>
 <% winner = team_1_score > team_2_score ? :team_1 : (team_2_score > team_1_score ? :team_2 : nil) %>
 
-<div id="matchcard-<%= game.id %>" class="bg-white dark:bg-neutral-800 border border-black/10 dark:border-white/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
+<div id="matchcard-<%= game.id %>" class="bg-white border border-black/10 rounded-xl shadow-xs overflow-hidden drop-shadow-xl">
   <div class="px-6 py-5 flex flex-col items-center text-center gap-4">
     <!-- Time & Date -->
     <div>
@@ -22,7 +22,7 @@
       <% else %>
         <p class="text-sm font-bold text-green-600"><%= start_time %></p>
       <% end %>
-      <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= date %></p>
+      <p class="text-sm text-neutral-500"><%= date %></p>
     </div>
 
     <!-- Teams -->
@@ -39,22 +39,22 @@
         <% if team_1.respond_to?(:logo) && team_1.logo.attached? %>
           <%= image_tag team_1.logo, width: 60, style: "border-radius:8px;" %>
         <% else %>
-          <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+          <div class="w-16 h-16 rounded-full bg-neutral-200"></div>
         <% end %>
-        <span class="text-sm font-medium text-neutral-900 dark:text-white">
+        <span class="text-sm font-medium text-neutral-900">
           <%= team_1.respond_to?(:name) ? team_1.name : (team_1.presence || "TBD") %>
         </span>
       </div>
 
       <!-- VS -->
-      <span class="text-sm text-neutral-500 dark:text-neutral-400"><%= bye_game ? "vs." : "vs." %></span>
+      <span class="text-sm text-neutral-500"><%= bye_game ? "vs." : "vs." %></span>
 
       <!-- Away Team / BYE -->
       <div class="flex flex-col items-center gap-2">
          <% if team_2.respond_to?(:logo) && team_2.logo.attached? %>
           <%= image_tag team_2.logo, width: 60, style: "border-radius:8px;" %>
         <% else %>
-          <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-600"></div>
+          <div class="w-16 h-16 rounded-full bg-neutral-200"></div>
         <% end %>
           <% if bye_game %>
             BYE
@@ -73,6 +73,6 @@
     </div>
 
     <!-- Venue -->
-    <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= game&.location.presence || "TBD" %></p>
+    <p class="text-sm text-neutral-500"><%= game&.location.presence || "TBD" %></p>
   </div>
 </div>
