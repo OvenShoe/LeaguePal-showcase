@@ -94,7 +94,7 @@
             data: { turbo_confirm: "Are you sure?" } %>
       </div>
     <% else %>
-      <%= link_to "Back to games", competition_games_path(@game.competition),
+      <%= link_to "Back to games", competition_games_path(@game.round.competition),
           class: "w-full sm:w-auto text-center rounded-xl px-4 py-2.5 text-sm font-medium bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors inline-block" %>
     <% end %>
   </div>
