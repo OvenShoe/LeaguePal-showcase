@@ -21,16 +21,9 @@
     <% end %>
 
     <!-- Team Members -->
-    <div class="w-full mb-6">
-      <h3 class="text-lg font-semibold text-neutral-800 dark:text-neutral-200 mb-2">Team Members</h3>
-      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <% @team_members.each do |member| %>
-          <li class="bg-neutral-100 dark:bg-neutral-800 rounded px-3 py-2 flex items-center gap-2">
-            <span class="font-medium"><%= member.user.first_name %> <%= member.user.last_name %></span>
-            <span class="ml-auto text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"><%= member.role.capitalize %></span>
-          </li>
-        <% end %>
-      </ul>
+    <div>
+      <p class="text-2xl text-center">Team Members:</p>
+      <%= render "shared/team_member_card", team_members: @team_members %>
     </div>
 
     <!-- Captain Controls -->
