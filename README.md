@@ -10,6 +10,8 @@ This repository highlights the work I personally authored in the original team r
 
 The commit history in this repository contains work authored by me from the original team project.
 
+[View My Commits](https://github.com/OvenShoe/LeaguePal-showcase/commits/main?author=Ivan%20Xue)
+
 All work listed below is based on commits I personally authored during development.
 
 ---
