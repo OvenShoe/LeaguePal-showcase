@@ -60,7 +60,7 @@ end
 
 gem "cloudinary"
 
-gem "openai", "~> 0.53.0"
+gem "openai", "~> 0.88.0"
 
 gem "anthropic"
 
